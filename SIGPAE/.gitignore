@@ -1,2 +1,4 @@
 *.pyc
 historia1/*.pyc
+historia1/migrations/
+SIGPAE/*.pyc
