@@ -21,17 +21,21 @@ def model_form_upload(request):
             filename, file_extension = os.path.splitext('documents/'+str(request.FILES['document']))
             if file_extension != ".pdf":
                 form1 = DocumentForm()
-                return render(request,'historia1/model_form_error.html', {
-                    'form' : form1})
+                return render(request,'historia1/model_form_error.html',
+                {
+                'form' : form1
+                })
+
             strng =leer('documents/'+str(request.FILES['document']))
-            return render(request,'historia1/some.html', {
-                'strng' : strng})
+            return render(request,'historia1/editar.html',
+            {
+            'strng' : strng
+            })
     else:
         form = DocumentForm()
-        #strng =leer(str(request.FILES['document']))
     return render(request,'historia1/model_form_upload.html', {
-        'form' : form
+    'form' : form
     })
 
-def some(request):
-    return render(request,'historia1/some.html')
+def editar(request):
+    return render(request,'historia1/editar.html')
