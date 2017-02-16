@@ -8,7 +8,7 @@ except ImportError: # Instala la libreria PyPDF2 en caso de no existir
 
 #archivo=raw_input("Introduzca el nombre del PDF a leer\n")
 def leer(archivo):
-	input = PdfFileReader(file(archivo, "rb"))
+	input = PdfFileReader(open(archivo, "rb"))
 
 	#print("Leyendo "+(input.getDocumentInfo().title)+".pdf")
 	texto = ""

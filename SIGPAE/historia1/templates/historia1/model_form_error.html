@@ -1,0 +1,11 @@
+{% extends 'historia1/base.html' %}
+
+{% block content %}
+  <font color='red'>UN ERROR HA OCURRIDO, ARCHIVO EN FORMATO ERRONEO</font>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Siguiente</button>
+  </form>
+
+{% endblock %}
