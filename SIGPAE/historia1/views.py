@@ -5,7 +5,6 @@ from readpdf import *
 from django.http import HttpResponse
 
 def index(request):
-
     return HttpResponse("Hello, world. You're at the polls index.")
 
 def after_upload(request):
@@ -17,13 +16,12 @@ def model_form_upload(request):
         form = DocumentForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            strng =leer("LLA-111.pdf")
+            strng =leer('documents/'+str(request.FILES['document']))
             return render(request,'historia1/after_upload.html', {
                 'strng' : strng})
     else:
         form = DocumentForm()
-        strng =leer("LLA-111.pdf")
-    return render(request,'historia1/after_upload.html', {
-        'form': form,
-        'strng' : strng
+        #strng =leer(str(request.FILES['document']))
+    return render(request,'historia1/model_form_upload.html', {
+        'form' : form
     })
