@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from .forms import DocumentForm
+from .forms import TranscripcionForm
 from readpdf import *
 # Create your views here.
 from django.http import HttpResponse
@@ -8,7 +9,22 @@ def index(request):
     return HttpResponse("Hello, world. You're at the polls index.")
 
 def after_upload(request):
-    return render(request,'historia1/after_upload.html')
+    #if request.method == 'POST':
+    #    form = TranscripcionForm(request.POST)
+    #    if form.is_valid():
+    #        return HttpResponseRedirect('/thanks/')
+    #else:
+    form = TranscripcionForm()
+    return render(request,'historia1/after_upload.html', {
+        'form' : form 
+    })
+
+def hist5(request):
+    form = TranscripcionForm()
+    return render(request,'historia1/hist5.html', {
+        'form' : form 
+    })
+
 
 
 def model_form_upload(request):

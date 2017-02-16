@@ -4,4 +4,5 @@ from . import views
 
 urlpatterns = [
     url(r'^$', views.model_form_upload, name='model_form_upload'),
+    url(r'^hist5$', views.hist5)
 ]
