@@ -10,12 +10,13 @@ except ImportError: # Instala la libreria PyPDF2 en caso de no existir
 def leer(archivo):
 	input = PdfFileReader(file(archivo, "rb"))
 
-	print("Leyendo "+(input.getDocumentInfo().title)+".pdf")
+	#print("Leyendo "+(input.getDocumentInfo().title)+".pdf")
+	texto = ""
+	for i in range(0,input.getNumPages()):
+		texto += input.getPage(i).extractText()
+		#print("\n")
 
 	return dict(numP=input.getNumPages(),
 				title=input.getDocumentInfo().title,
-				input=input)
-	#for i in range(0,input.getNumPages()):
-	#	print("Page {}".format(i+1))
-	#	print(input.getPage(i).extractText())
-	#	print("\n")
+				input=input,
+				texto = texto)

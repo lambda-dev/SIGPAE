@@ -8,17 +8,22 @@ def index(request):
 
     return HttpResponse("Hello, world. You're at the polls index.")
 
+def after_upload(request):
+    return render(request,'historia1/after_upload.html')
+
+
 def model_form_upload(request):
     if request.method == 'POST':
         form = DocumentForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             strng =leer("LLA-111.pdf")
-            return redirect('home')
+            return render(request,'historia1/after_upload.html', {
+                'strng' : strng})
     else:
         form = DocumentForm()
         strng =leer("LLA-111.pdf")
-    return render(request,'historia1/model_form_upload.html', {
+    return render(request,'historia1/after_upload.html', {
         'form': form,
         'strng' : strng
     })

@@ -4,9 +4,7 @@
   <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Upload</button>
+    <button type="submit">Siguiente</button>
   </form>
 
-  <p><a href="#">Return to home</a></p>
-  <h1>"{{ strng.numP }}"</h1>
 {% endblock %}
