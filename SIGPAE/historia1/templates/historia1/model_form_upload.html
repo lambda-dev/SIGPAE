@@ -1,0 +1,12 @@
+{% extends 'historia1/base.html' %}
+
+{% block content %}
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Upload</button>
+  </form>
+
+  <p><a href="#">Return to home</a></p>
+  <h1>"{{ strng.numP }}"</h1>
+{% endblock %}
