@@ -5,7 +5,9 @@ from django.conf.urls.static import static
 from . import views
 
 urlpatterns = [
-    url(r'^$', views.model_form_upload, name='model_form_upload'),
-    url(r'^a$',views.editar,name='editar'),
+    url(r'^upload/$', views.model_form_upload, name='model_form_upload'),
+    url(r'^editar/$', views.editar_t, name='editar_t'),
+    url(r'^$', views.index, name='index'),
+
     
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
