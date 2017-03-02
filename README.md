@@ -1,5 +1,5 @@
 # SIGPAE
 SIstema de Gestión de Programas Analíticos de Estudio
 
-Historia 5 en
-localhost/hist5
+Mostrar PDF [done]
+Dividida vista en 3 partes [done]
