@@ -61,9 +61,13 @@ def editar_t(request):
         form = SaveForm(request.POST, instance=document)
         if form.is_valid():
             form.save()
-            form1 = DocumentForm()
             error = "GUARDADO"
             return redirect('model_form_upload')
+        else:
+            strng = "ERROR FORM NOT VALID"
+            url = request.session['url']
+            form_s = SaveForm(instance = document)
+            return render(request,'historia1/editar.html', {'strng': strng, 'url': url, 'form_s': form})
 
     else:
         strng = request.session['strng']
