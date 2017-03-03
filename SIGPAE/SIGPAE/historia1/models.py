@@ -23,6 +23,7 @@ class Document(models.Model):
     horas_practica=models.PositiveIntegerField('Horas de Práctica', blank=True,null=True)
     pdf_to_text = models.TextField(blank=True)
     year = models.IntegerField('Año',blank=True, null=True, default=2017, validators=[MaxValueValidator(2017), MinValueValidator(1969)])
+    scanned = models.BooleanField(blank=True)
 
     AB = 'AB'
     EM = 'EM'

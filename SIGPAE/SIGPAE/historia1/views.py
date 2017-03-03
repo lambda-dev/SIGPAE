@@ -16,8 +16,12 @@ def buscar(request):
 
 def model_form_upload(request):
     error = ""
+    scan=False
     if request.method == 'POST':
         form = DocumentForm(request.POST, request.FILES)
+
+        if request.POST.get('scanned') == 'on':
+            scan = True
 
         if form.is_valid():
             doc = form.save(commit = False)
@@ -44,8 +48,11 @@ def model_form_upload(request):
                 pass
 
             doc.save()
-            strng = leer('documents/'+str(request.FILES['document']))
-            request.session['strng'] = strng['texto']
+            if scan:
+                strng = leerImg('documents/'+str(request.FILES['document']))
+            else:
+                strng = leer('documents/'+str(request.FILES['document']))
+            request.session['strng'] = strng
             url = doc.document.url
             request.session['url'] = url
             request.session['name'] = str(request.FILES['document'])

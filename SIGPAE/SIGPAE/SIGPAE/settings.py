@@ -121,3 +121,4 @@ USE_TZ = True
 STATIC_URL = '/static/'
 MEDIA_ROOT = '/home/adolfo/Desktop/SIGPAE/SIGPAE/SIGPAE/'
 MEDIA_URL = '/documents/'
+
