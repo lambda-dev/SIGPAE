@@ -2,16 +2,19 @@ from django.shortcuts import render, redirect
 from .forms import DocumentForm, SaveForm
 from .models import Document
 from readpdf import *
+from datetime import *
 import os
 # Create your views here.
 from django.http import HttpResponse, HttpResponseRedirect
 
 def index(request):
-    #return HttpResponse("Hello, world. You're at the polls index.")
-    return redirect(model_form_upload)
+    #return redirect(model_form_upload)
+    return render(request, 'historia1/index.html')
+
+def buscar(request):
+    return render(request, 'historia1/buscar.html')
 
 def model_form_upload(request):
-    print(request.session.items())
     error = ""
     if request.method == 'POST':
         form = DocumentForm(request.POST, request.FILES)
@@ -60,11 +63,20 @@ def editar_t(request):
     if request.method == 'POST':
         form = SaveForm(request.POST, instance=document)
         if form.is_valid():
-            form.save()
-            error = "GUARDADO"
+            month = 1
+            if form.cleaned_data['trimestre'] == 'EM':
+                month = 1
+            elif form.cleaned_data['trimestre'] == 'AB':
+                month = 4
+            elif form.cleaned_data['trimestre'] == 'SD':
+                month = 9
+            fecha = date(form.cleaned_data['year'], month, 1)
+            temp = form.save(commit=False)
+            temp.fecha = fecha
+            temp.save()
             return redirect('model_form_upload')
         else:
-            strng = "ERROR FORM NOT VALID"
+            strng = request.session['strng']
             url = request.session['url']
             form_s = SaveForm(instance = document)
             return render(request,'historia1/editar.html', {'strng': strng, 'url': url, 'form_s': form})

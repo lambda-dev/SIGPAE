@@ -9,4 +9,4 @@ class DocumentForm(forms.ModelForm):
 class SaveForm(forms.ModelForm):
     class Meta:
         model = Document
-        fields = ['asignatura','codigo','creditos','departamento','requisitos','objetivos','contenidos','metodologias','evaluacion','bibliografias','horas_teoria','fecha','horas_lab','horas_practica']
+        fields = ['asignatura','codigo','creditos','departamento','requisitos','objetivos','contenidos','metodologias','evaluacion','bibliografias','horas_teoria','horas_lab','horas_practica','year', 'trimestre']
