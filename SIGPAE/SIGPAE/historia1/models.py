@@ -5,8 +5,8 @@ from django.db import models
 # Create your models here.
 class Document(models.Model):
     name = models.CharField(max_length=255)
-    description = models.CharField(max_length=255, blank=True)
-    document = models.FileField(upload_to='documents')
+    description = models.CharField('Descripción',max_length=255, blank=True)
+    document = models.FileField('Documento A Subir',upload_to='documents')
     uploaded_at = models.DateTimeField(auto_now_add=True)
     asignatura= models.CharField('Nombre de la asignatura', max_length=255,blank=True)
     codigo= models.CharField('Código de la materia', max_length=10,blank=True)
@@ -23,7 +23,7 @@ class Document(models.Model):
     horas_practica=models.PositiveIntegerField('Horas de Práctica', blank=True,null=True)
     pdf_to_text = models.TextField(blank=True)
     year = models.IntegerField('Año',blank=True, null=True, default=2017, validators=[MaxValueValidator(2017), MinValueValidator(1969)])
-    scanned = models.BooleanField(blank=True)
+    scanned = models.BooleanField('Utilizar Reconocimiento de Caracteres',blank=True)
 
     AB = 'AB'
     EM = 'EM'

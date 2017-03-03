@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .forms import DocumentForm, SaveForm
+from .forms import DocumentForm, SaveForm, SearchForm
 from .models import Document
 from readpdf import *
 from datetime import *
@@ -12,7 +12,14 @@ def index(request):
     return render(request, 'historia1/index.html')
 
 def buscar(request):
-    return render(request, 'historia1/buscar.html')
+    if request.method == 'POST':
+        form = SearchForm(request.POST)
+        if form.is_valid():
+            docs = Document.objects.all().filter(codigo=form.cleaned_data['codigo'])
+        return render(request, 'historia1/buscar.html', {'form': form, 'query': docs})
+    else:
+        form = SearchForm()
+        return render(request, 'historia1/buscar.html', {'form': form})
 
 def model_form_upload(request):
     error = ""
