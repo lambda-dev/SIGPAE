@@ -4,7 +4,7 @@ try:
     from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
     from pdfminer.converter import PDFPageAggregator
     from pdfminer.layout import LAParams, LTTextBox, LTTextLine
-	
+
 # Instala la libreria pdfminer3k en caso de no existir
 except ImportError:
     print('No existe la libreria, presione enter para instalarla')
