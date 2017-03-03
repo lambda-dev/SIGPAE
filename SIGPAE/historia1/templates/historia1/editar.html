@@ -3,47 +3,57 @@
 
 {% block content %}
 <div class="container">
-
   <div class="row">
 
-    <h1>Texto Inicial</h1>
-    <div class="col-md-6">
-      <textarea>
-        <p style="text-align: center;">
-          {{strng.texto}}
-        </p>
-      </textarea>
+    <h1 style="text-align:center;">Transcripción</h1>
+
+
+    <div class="col-md-5">
+      <object data='{{url}}' 
+          type='application/pdf' 
+          width='100%' 
+          height='700px'/></object>
     </div>
 
-    <div class="col-md-6">
-      <h1>Nombre de Asignatura</h1>
-      <textareat class="varios">
-      </textareat>
+    <div class="col-md-4">
+      <textareal>
+        <p style="text-align: center;">
+          {{strng}}
+        </p>
+      </textareal>
+    </div>
 
-      <h1>Código de Asignatura</h1>
-      <textareat class="varios">
-      </textareat>
-
-      <h1>Créditos</h1>
-      <textareat class="varios">
-      </textareat>
-
-      <h1>Objetivos</h1>
-      <textareat class="varios">
-      </textareat>
-
-      <h1>Período Vigencia</h1>
+    <div class="col-md-3">
+    <form method="post" enctype="multipart/form-data">
+                    <!--{% csrf_token %}
+                    {{ form_s.as_p }}-->
+      {% csrf_token %}
+      {% for field in form_s %}
+      <div class="form-group">
+        {{ field.errors }}
+        {{ field.label_tag }} {{ field }}
+        {% if field.help_text %}
+        <p class="help">{{ field.help_text|safe }}</p>
+        {% endif %}
+      </div>
+      {% endfor %}
+      <button class="btn btn-primary btn-lg btn-block" type="submit">Guardar</button>
+    </form>
+      <!--- <h3>Período Vigencia</h3>
+      <div class="form-group">
       <label>Trimestre</label>
-      <select>
+      <select class="form-control">
         <option value="EM">Enero - Marzo</option>
         <option value="AJ">Abril - Julio</option>
         <option value="SD">Septiembre - Diciembre</option>
       </select>
+      </div>
       
+      <div class="form-group">
       <label>Año</label>
-      <input type="number" min="1969" max="2017" step="1" value="2017" />
+      <input class="form-control" type="number" min="1969" max="2017" step="1" value="2017" />
+      </div> -->
     </div>
-  <div>
-
+  </div>
 </div>
 {% endblock %}
