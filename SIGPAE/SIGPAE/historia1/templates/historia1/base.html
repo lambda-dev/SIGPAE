@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head>
+      <head>
+        <link rel="stylesheet" href="{% static "bootstrap/js/bootstrap.min.css" %}">
+        <script src="{% static "tinymce/tinymce.min.js" %}"></script>
+        <script src="{% static "tinymce/tinymce.js" %}" ></script>
+        <script src="{% static "bootstrap/js/bootstrap.min.js" %}"></script>
+        <script src="{% static "jquery/js/jquery.js" %}"></script>
+      </head>
+      <title>Proyecto SIGPAE</title>
+    </head>
+    
+    <style>
+    body,html {
+        background-color:#f2f2f2;
+        padding-top:2%;
+    }
+    select {
+        width: 100%;
+    }
+    .panel-body {
+        text-align:center;
+    }
+    input {
+        width:100%;
+    }
+    .btn {
+        border-radius:0px;
+    }
+    </style>
+    
+    <body>
+    {% block content %}
+    {% endblock content %}
+    </body>
+</html>

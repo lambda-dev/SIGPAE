@@ -1,0 +1,48 @@
+{% extends 'historia1/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-4">
+  </div>
+  <div class="col-md-4">
+    <h1>CONSULTAR</h1>
+    <div class="panel">
+      <div class="panel-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button class="btn btn-primary btn-lg btn-block" type="submit">Siguiente</button>
+                </form>
+      </div>
+    </div>
+  </div>
+</div>
+<div class ="row">
+  <div class="col-md-4">
+  </div>
+    <div class="col-md-4">
+    {% if query %}
+    <table class="table table-striped table-hover">
+    <thead>
+      <tr><th>CÓDIGO</th>
+      <th>AÑO</th>
+      <th>TRIMESTRE</th>
+      <th></th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for item in query%}
+      <tr>
+      <td>{{item.codigo}}</td>
+      <td>{{item.year}}</td>
+      <td>{{item.trimestre}}</td>
+      <td>Editar</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+      </table>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
