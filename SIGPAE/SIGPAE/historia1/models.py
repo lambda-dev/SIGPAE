@@ -2,43 +2,81 @@ from __future__ import unicode_literals
 from django.core.validators import *
 from django.db import models
 
+class Programa(models.Model):
+  TRIMESTRES = (
+      ('AB', 'Abril - Julio'),
+      ('EM', 'Enero - Marzo'), 
+      ('SD', 'Septiembre - Diciembre'),
+      ('NN', 'Ninguno')
+    )
+
+  codigo = models.CharField('Código de la materia', max_length=10,blank=True)
+  materia = models.CharField('Denominación', max_length=255,blank=True)
+  h_teoria = models.PositiveIntegerField('Horas de Teoría',blank=True,null=True)
+  h_prac = models.PositiveIntegerField('Horas de Práctica',blank=True,null=True)
+  h_lab =models.PositiveIntegerField('Horas de Laboratorio',blank=True,null=True)
+  fecha_vigtrim = models.CharField('Trimestre',
+        max_length=2,
+        choices=TRIMESTRES,
+        default='NN',
+    )
+
+  fecha_vigano = models.IntegerField('Año', blank=True, null=True, validators=[MaxValueValidator(2017), MinValueValidator(1969)])
+  obj_g = models.TextField('Objetivos Generales', blank=True)
+  obj_e = models.TextField('Objetivos Específicos', blank=True)
+  contenidos = models.TextField('Contenidos', blank=True)
+  estrategias = models.TextField('Estrategias Metodológicas', blank=True)
+  estrat_eval = models.TextField('Estrategias de Evaluación', blank=True)
+  fuentes = models.TextField('Fuentes de Información Recomendadas', blank=True)
+  cronograma = models.TextField('Cronograma', blank=True)
+  sinoptico = models.TextField('Contenidos Sińópticos', blank=True)
+
+  def __str__(self):
+      return self.codigo + ": " + self.materia + " (" + self.fecha_vigtrim + " " + str(self.fecha_vigano) + ")"
+
+  def get_absolute_url(self):
+      return reverse('view_p', kwargs={'pk': self.pk})
+
+
 # Create your models here.
 class Document(models.Model):
     name = models.CharField(max_length=255)
     description = models.CharField('Descripción',max_length=255, blank=True)
     document = models.FileField('Documento A Subir',upload_to='documents')
     uploaded_at = models.DateTimeField(auto_now_add=True)
-    asignatura= models.CharField('Nombre de la asignatura', max_length=255,blank=True)
-    codigo= models.CharField('Código de la materia', max_length=10,blank=True)
-    creditos= models.PositiveIntegerField('Créditos', blank=True,null=True)
+    asignatura= models.CharField('Denominación', max_length=255,blank=True)
+    codigo= models.CharField('Código', max_length=10,blank=True)
+    creditos= models.PositiveIntegerField('Unidades Créditos', blank=True,null=True, validators=[MaxValueValidator(16), MinValueValidator(0)])
     requisitos= models.TextField('Requisitos', blank=True)
     objetivos= models.TextField('Objetivos', blank=True)
     contenidos= models.TextField('Contenidos Sinópticos', blank=True)
     metodologias=models.TextField('Estrategias Metodológicas', blank=True)
     evaluacion=models.TextField('Estrategias de Evaluación', blank=True)
-    bibliografias=models.TextField('Referencias Bibliográficas', blank=True)
+    bibliografias=models.TextField('Fuentes de Información Recomendadas', blank=True)
     horas_teoria=models.PositiveIntegerField('Horas de Teoría',blank=True,null=True)
     fecha= models.DateField('Entrada en Vigencia', blank=True,null=True)
     horas_lab=models.PositiveIntegerField('Horas de Laboratorio',blank=True,null=True)
     horas_practica=models.PositiveIntegerField('Horas de Práctica', blank=True,null=True)
     pdf_to_text = models.TextField(blank=True)
-    year = models.IntegerField('Año',blank=True, null=True, default=2017, validators=[MaxValueValidator(2017), MinValueValidator(1969)])
+    year = models.IntegerField('Año',blank=True, null=True, validators=[MaxValueValidator(2017), MinValueValidator(1969)])
     scanned = models.BooleanField('Utilizar Reconocimiento de Caracteres',blank=True)
 
     AB = 'AB'
     EM = 'EM'
     SD = 'SD'
+    NN = 'NN'
 
     TRIMESTRES = (
       (AB, 'Abril - Julio'),
       (EM, 'Enero - Marzo'), 
-      (SD, 'Septiembre - Diciembre')
+      (SD, 'Septiembre - Diciembre'),
+      (NN, 'Ninguno')
       )
 
     trimestre = models.CharField(
         max_length=2,
         choices=TRIMESTRES,
-        default=EM,
+        default=NN,
     )
 
     CFM = 'Ciencias Físicas y Matemáticas'
@@ -181,3 +219,6 @@ class Document(models.Model):
 
     def __str__(self):
       return self.name
+
+    def get_absolute_url(self):
+      return reverse('editar_t', kwargs={'pk': self.pk})

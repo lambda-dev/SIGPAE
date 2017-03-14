@@ -6,8 +6,11 @@ from . import views
 
 urlpatterns = [
     url(r'^upload/$', views.model_form_upload, name='model_form_upload'),
-    url(r'^editar/$', views.editar_t, name='editar_t'),
+    url(r'^editar/(?P<pk>\d+)$', views.editar_t, name='editar_t'),
     url(r'^consultar/$', views.buscar, name='buscar'),
+    url(r'^consultar/p$', views.buscar_p, name='buscar_p'),
+    url(r'^consultar/t$', views.buscar_t, name='buscar_t'),
+    url(r'^consultar/view/(?P<pk>\d+)$', views.view_p, name='view_p'),
     url(r'^$', views.index, name='index'),
 
     
