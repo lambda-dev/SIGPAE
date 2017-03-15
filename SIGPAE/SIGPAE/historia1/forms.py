@@ -1,6 +1,11 @@
 from django import forms
 from .models import Document, Programa
 
+class PASAForm(forms.ModelForm):
+    class Meta:
+        model = Document
+        fields = ['nombre', 'email', 'telefono']
+
 class DocumentForm(forms.ModelForm):
     class Meta:
         model = Document
@@ -15,12 +20,19 @@ class DocumentForm(forms.ModelForm):
 class SaveForm(forms.ModelForm):
     class Meta:
         model = Document
-        fields = ['asignatura','codigo','creditos','departamento','requisitos','objetivos','contenidos','metodologias','evaluacion','bibliografias','horas_teoria','horas_lab','horas_practica','year', 'trimestre']
+        fields = ['pdf_to_text', 'asignatura','codigo','creditos','year', 'trimestre','fecha','departamento','requisitos','objetivos','contenidos','metodologias','evaluacion','bibliografias','horas_teoria','horas_lab','horas_practica','guardar']
 
     def clean(self):
         cleaned_data = super(SaveForm, self).clean()
         cod = cleaned_data.get("codigo")
-        # Revisar si suma de horas no da > 40
+        h_lab = cleaned_data.get("horas_lab")
+        h_teo = cleaned_data.get("horas_teoria")
+        h_prac = cleaned_data.get("horas_practica")
+
+        if h_lab + h_teo + h_prac > 40:
+            raise forms.ValidationError("Error: Suma de horas des mayor a 40")
+
+        # TODO: Revisar si suma de horas no da > 40
 
 class SearchForm(forms.ModelForm):
     class Meta:
@@ -83,3 +95,27 @@ class ViewProgForm(forms.ModelForm):
         self.fields['fuentes'].disabled = True
         self.fields['cronograma'].disabled = True
 
+class ViewPASAForm(forms.ModelForm):
+    class Meta:
+        model = Document
+        fields = ['nombre', 'email','telefono', 'asignatura','codigo','creditos','year', 'trimestre','departamento','requisitos','objetivos','contenidos','metodologias','evaluacion','bibliografias','horas_teoria','horas_lab','horas_practica']
+
+    def __init__(self, *args, **kwargs):
+        super(ViewPASAForm, self).__init__(*args, **kwargs)
+        self.fields['nombre'].disabled = True
+        self.fields['email'].disabled = True
+        self.fields['telefono'].disabled = True
+        self.fields['asignatura'].disabled = True
+        self.fields['codigo'].disabled = True
+        self.fields['creditos'].disabled = True
+        self.fields['year'].disabled = True
+        self.fields['trimestre'].disabled = True
+        self.fields['departamento'].disabled = True
+        self.fields['requisitos'].disabled = True
+        self.fields['objetivos'].disabled = True
+        self.fields['metodologias'].disabled = True
+        self.fields['evaluacion'].disabled = True
+        self.fields['bibliografias'].disabled = True
+        self.fields['horas_teoria'].disabled = True
+        self.fields['horas_lab'].disabled = True
+        self.fields['horas_practica'].disabled = True

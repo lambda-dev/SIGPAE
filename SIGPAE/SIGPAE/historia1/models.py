@@ -53,13 +53,26 @@ class Document(models.Model):
     metodologias=models.TextField('Estrategias Metodológicas', blank=True)
     evaluacion=models.TextField('Estrategias de Evaluación', blank=True)
     bibliografias=models.TextField('Fuentes de Información Recomendadas', blank=True)
-    horas_teoria=models.PositiveIntegerField('Horas de Teoría',blank=True,null=True)
+    horas_teoria=models.PositiveIntegerField('Horas de Teoría',default=0)
     fecha= models.DateField('Entrada en Vigencia', blank=True,null=True)
-    horas_lab=models.PositiveIntegerField('Horas de Laboratorio',blank=True,null=True)
-    horas_practica=models.PositiveIntegerField('Horas de Práctica', blank=True,null=True)
+    horas_lab=models.PositiveIntegerField('Horas de Laboratorio',default=0)
+    horas_practica=models.PositiveIntegerField('Horas de Práctica',default=0)
     pdf_to_text = models.TextField(blank=True)
     year = models.IntegerField('Año',blank=True, null=True, validators=[MaxValueValidator(2017), MinValueValidator(1969)])
     scanned = models.BooleanField('Utilizar Reconocimiento de Caracteres',blank=True)
+    nombre = models.CharField('Nombre', max_length=128, blank=True)
+    email = models.CharField('Email', max_length=128, blank=True)
+    telefono = models.CharField('Teléfono', max_length=30, blank=True)
+    
+    opciones = (
+      ('PASA', 'PASA'),
+      ('TRAN', 'Transcripción')
+      )
+    guardar = models.CharField('Guardar como:',
+        max_length=4,
+        choices=opciones,
+        default='TRAN',
+    )
 
     AB = 'AB'
     EM = 'EM'

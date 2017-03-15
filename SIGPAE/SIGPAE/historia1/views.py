@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import DocumentForm, SaveForm, SearchForm, SearchFormProg, ViewProgForm
+from .forms import DocumentForm, SaveForm, SearchForm, SearchFormProg, ViewProgForm, PASAForm, ViewPASAForm
 from .models import Document, Programa
 from readpdf import *
 from datetime import *
@@ -13,6 +13,31 @@ def index(request):
 def buscar(request):
     return render(request, 'historia1/buscar.html')
 
+def buscar_s(request):
+    if request.method == 'POST':
+        form = SearchForm(request.POST)
+        docs = False
+        if form.is_valid():
+            codigo = form.cleaned_data['codigo'].upper()
+            year = form.cleaned_data['year']
+            trim = form.cleaned_data['trimestre']
+            if year is not None:
+                docs = Document.objects.all().filter(codigo=codigo,year=year,trimestre=trim,guardar="PASA")
+            else:
+                docs = Document.objects.all().filter(codigo=codigo,guardar="PASA")
+        return render(request, 'historia1/buscar_s.html', {'form': form, 'query': docs})
+    else:
+        form = SearchForm()
+        return render(request, 'historia1/buscar_s.html', {'form': form})
+
+def view_s(request, pk):
+    doc = get_object_or_404(Document, pk=pk)
+    if doc.guardar == 'TRAN':
+        return redirect('index')
+
+    form = ViewPASAForm(request.POST or None, instance=doc)
+    return render(request, 'historia1/view_s.html', {'form':form})
+
 def buscar_t(request):
     if request.method == 'POST':
         form = SearchForm(request.POST)
@@ -22,9 +47,9 @@ def buscar_t(request):
             year = form.cleaned_data['year']
             trim = form.cleaned_data['trimestre']
             if year is not None:
-                docs = Document.objects.all().filter(codigo=codigo,year=year,trimestre=trim)
+                docs = Document.objects.all().filter(codigo=codigo,year=year,trimestre=trim,guardar="TRAN")
             else:
-                docs = Document.objects.all().filter(codigo=codigo)
+                docs = Document.objects.all().filter(codigo=codigo,guardar="TRAN")
         return render(request, 'historia1/buscar_t.html', {'form': form, 'query': docs})
     else:
         form = SearchForm()
@@ -68,18 +93,18 @@ def model_form_upload(request):
                 'form' : form1,
                 'error': error
                 })
-            try: 
-                search = Document.objects.get(name=doc.name)
-                form1 = DocumentForm()
-                error = "ERROR. YA EXISTE UN ARCHIVO CON ESE NOMBRE"
-                return render(request,'historia1/model_form_upload.html',
-                {
-                'form' : form1,
-                'error': error
-                })
-            except Document.DoesNotExist:
-                pass
-
+            #try: 
+                #search = Document.objects.get(name=doc.name)
+                #form1 = DocumentForm()
+                #error = "ERROR. YA EXISTE UN ARCHIVO CON ESE NOMBRE"
+                #return render(request,'historia1/model_form_upload.html',
+                #{
+                #'form' : form1,
+                #'error': error
+                #})
+            #except Document.DoesNotExist:
+                #pass
+            doc.save()
             if scan:
                 strng = leerImg('documents/'+str(request.FILES['document']))
             else:
@@ -87,6 +112,7 @@ def model_form_upload(request):
 
             doc.pdf_to_text = strng
             doc.save()
+
             document = Document.objects.get(name=str(request.FILES['document']))
 
             return redirect('editar_t', document.id)
@@ -108,6 +134,9 @@ def editar_t(request, pk):
     url = doc.document.url
     strng = doc.pdf_to_text
 
+    if doc.guardar == 'PASA':
+        return redirect('index')
+
     form = SaveForm(request.POST or None, instance=doc)
     if form.is_valid():
         month = 1
@@ -120,40 +149,30 @@ def editar_t(request, pk):
 
         if form.cleaned_data['year'] is not None: 
             fecha = date(form.cleaned_data['year'], month, 1)
+            temp.fecha = fecha
 
         temp = form.save(commit=False)
-        temp.fecha = fecha
-        temp.pdf_to_text = request.session['strng']
         temp.codigo = form.cleaned_data['codigo'].upper()
         temp.save()
-        return redirect('model_form_upload')
+
+        # PARA PASA => VERIFICAR QUE CAMPOS OBLI NO VACIOS, OTRAS RESTRICCIONES
+        if form.cleaned_data['guardar'] == 'PASA':
+            return redirect('form_pasa', pk)
+        else:
+            return redirect('editar_t', pk)
+
     return render(request, 'historia1/editar.html', {'strng': strng, 'url': url, 'form_s': form})
 
-
-    # if request.method == 'POST':
-    #     form = SaveForm(request.POST, instance=doc)
-    #     if form.is_valid():
-    #         month = 1
-    #         if form.cleaned_data['trimestre'] == 'EM':
-    #             month = 1
-    #         elif form.cleaned_data['trimestre'] == 'AB':
-    #             month = 4
-    #         elif form.cleaned_data['trimestre'] == 'SD':
-    #             month = 9
-    #         fecha = date(form.cleaned_data['year'], month, 1)
-    #         temp = form.save(commit=False)
-    #         temp.fecha = fecha
-    #         temp.pdf_to_text = request.session['strng']
-    #         temp.codigo = form.cleaned_data['codigo'].upper()
-    #         temp.save()
-    #         return redirect('model_form_upload')
-    #     else:
-    #         strng = request.session['strng']
-    #         form_s = SaveForm(instance = doc)
-    #         return render(request,'historia1/editar.html', {'strng': strng, 'url': url, 'form_s': form})
-
-    # else:
-    #     strng = request.session['strng']
-    #     form_s = SaveForm()
-    #     return render(request,'historia1/editar.html', {'strng': strng, 'url': url, 'form_s': form_s})
+def form_pasa(request, pk):
+    doc = get_object_or_404(Document, pk=pk)
+    form = PASAForm(request.POST or None, instance=doc)
     
+    if form.is_valid():
+        form.save()
+        return redirect('index')
+        
+    return render(request, 'historia1/pasa.html', {'form':form, 'pk':pk})
+
+
+
+   

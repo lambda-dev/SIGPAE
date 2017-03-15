@@ -3,7 +3,7 @@
 
 {% block content %}
 <div class="row">
-    <center><h1>BUSCAR TRANSCRIPCIÓN</h1></center>
+    <center><h1>BUSCAR DOCUMENTOS PASA</h1></center>
   <div class="col-md-4">
   </div>
   <div class="col-md-4">
@@ -53,7 +53,7 @@
       <td>{{item.codigo}}</td>
       <td>{{item.year}}</td>
       <td>{{item.trimestre}}</td>
-      <td><a href="{% url "editar_t" item.id %}" role="button" class="btn btn-primary"">Editar</a></td>
+      <td><a href="{% url "view_s" item.id %}" role="button" class="btn btn-primary"">Ver</a></td>
       </tr>
       {% endfor %}
       </tbody>
