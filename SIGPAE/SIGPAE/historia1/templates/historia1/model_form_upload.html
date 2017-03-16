@@ -5,9 +5,9 @@
     <div class="col-md-4">
     </div>
     <div class="col-md-4">
-        <font color='red'>{{error}}</font>
-        <font color='green'>{{msg}}</font>
-
+            {% if error %}
+                <div class="alert alert-danger">{{error}}</div>
+            {% endif %}
         <div class="panel">
             <div class="panel-body">
                 <form method="post" enctype="multipart/form-data">

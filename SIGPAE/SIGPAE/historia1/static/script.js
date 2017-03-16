@@ -4,11 +4,11 @@ $( document ).ready(function() {
   $($label).insertBefore('#id_year');
   $($label).insertBefore('#id_fecha_vigano');
 
-  var $alert = '<div class="alert alert-warning"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>TEST</div>'; 
-  $('#id_guardar').change(function() {
+  $('select[name=guardar]').on('change', function() {
       if ($(this).val() === 'PASA') {
-          //$($alert).insertAfter('#id_guardar');
-          $('#id_guardar').append($alert);
+        $("#msg").show();
+      } else {
+        $("#msg").hide();      
       }
   });
 });

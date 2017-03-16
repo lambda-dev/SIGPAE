@@ -6,6 +6,11 @@
   <div class="row">
 
     <h1 style="text-align:center;">Transcripción</h1>
+  {% if request.GET.msg %}
+    {% if request.GET.msg == "saved"%}
+      <div style="text-align:center;" class="alert alert-success">La Transcripción ha sido guardada exitosamente</div>
+    {% endif %}
+  {% endif %}
 
 
     <div class="col-md-5 col-sm-5">
@@ -16,7 +21,7 @@
     </div>
 
     <div class="col-md-4 col-sm-4">
-      <textareal id="id_pdf_to_text" name="pdf_to_text">
+      <textareal id="id_pdf_to_text" name="pdf_to_text" width='100%'>
         <p style="text-align: center;">
           {{strng}}
         </p>
@@ -26,24 +31,47 @@
     <div class="col-md-3 col-sm-3">
     <form method="post" enctype="multipart/form-data">
       
-        {% for error in form.non_field_errors %}
-          <div class="alert alert-danger">{{error}}</div>
-        {% endfor %}
+                {% if form_s.non_field_errors %}
+                  {% for error in form_s.non_field_errors %}
+                   <div class="alert alert-danger" role="alert"> {{error}}</div>
+                  {% endfor %}
+                {% endif %}
      
       {% csrf_token %}
       {% for field in form_s %}
         {% if field.name != "pdf_to_text" %}
           <div class="form-group" id="{{field.auto_id}}">
+            {{ field.label_tag }} {{ field }}
+            </div>
             {% if field.errors %}
               {% for error in field.errors %}
                 <div class="alert alert-danger" role="alert">{{ error }}</div>
               {% endfor %}
             {% endif %}
-            {{ field.label_tag }} {{ field }}
-            </div>
+           
         {% endif %}
       {% endfor %}
+      <div style="display:none;" id="msg" class="alert alert-warning">Recuerde que todos los campos <strong>obligatorios</strong> deben estar <strong>llenos</strong> y cumplir sus <strong>restricciones</strong></div>
       <button class="btn btn-primary btn-lg" type="submit">Guardar</button>
+
+    <script>
+    $(document).change(function(){
+      var suma = 0;
+      suma= Number($('#id_horas_teoria').find('input').val())+Number($('#id_horas_lab').find('input').val())+Number($('#id_horas_practica').find('input').val());
+      if ((suma)>40){
+          alert("La suma de las horas de teoría, laboratorio y práctica deben ser menor a 40.");
+      }
+      if (Number($('#id_creditos').find('input').val())>16){
+          alert("Las Unidades Créditos debe ser un número entre 0 y 16.");
+      }
+      if (Number($('#id_year').find('input').val())<1969 && Number($('#id_year').find('input').val()) != 0){
+          alert("El año de entrada en vigencia no puede ser menor a 1969.");
+      }
+      if (Number($('#id_year').find('input').val())>2017){
+          alert("El año de entrada en vigencia no puede mayor al año actual.");
+      }
+    });
+</script>
     </form>
     </div>
   </div>

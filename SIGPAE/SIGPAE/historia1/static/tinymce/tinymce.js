@@ -15,7 +15,6 @@ tinymce.init({
 tinymce.init({
   selector: 'textareal',
   height: 900,
-  width: 370,
   menubar: false,
   plugins: [
     'advlist autolink lists link image charmap print preview anchor',

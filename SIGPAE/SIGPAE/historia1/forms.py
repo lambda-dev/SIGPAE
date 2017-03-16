@@ -28,11 +28,75 @@ class SaveForm(forms.ModelForm):
         h_lab = cleaned_data.get("horas_lab")
         h_teo = cleaned_data.get("horas_teoria")
         h_prac = cleaned_data.get("horas_practica")
+        creds = cleaned_data.get("creditos")
+        year = cleaned_data.get("year")
+        trim = cleaned_data.get("trimestre")
+        pasa = cleaned_data.get("guardar")
+        asig = cleaned_data.get("asignatura")
+        fuentes = cleaned_data.get("bibliografias")
+        sinop = cleaned_data.get("contenidos")
+        print(cleaned_data)
 
-        if h_lab + h_teo + h_prac > 40:
-            raise forms.ValidationError("Error: Suma de horas des mayor a 40")
+        if h_lab is not None and h_teo is not None and h_prac is not None:
+            if h_lab + h_teo + h_prac > 40:
+                raise forms.ValidationError("Error: Suma de horas es mayor a 40")
+        elif h_lab is not None and h_teo is not None:
+            if h_lab + h_teo > 40:
+                raise forms.ValidationError("Error: Suma de horas es mayor a 40")
+        elif h_lab is not None and h_prac is not None:
+            if h_lab + h_teo > 40:
+                raise forms.ValidationError("Error: Suma de horas es mayor a 40")
+        elif h_prac is not None and h_teo is not None:
+            if h_prac + h_teo > 40:
+                raise forms.ValidationError("Error: Suma de horas es mayor a 40")
+        elif h_prac is not None:
+            if h_prac > 40:
+                raise forms.ValidationError("Error: Suma de horas es mayor a 40")
+        elif h_teo is not None:
+            if h_teo > 40:
+                raise forms.ValidationError("Error: Suma de horas es mayor a 40")
+        elif h_lab is not None:
+            if h_lab > 40:
+                raise forms.ValidationError("Error: Suma de horas es mayor a 40")
 
-        # TODO: Revisar si suma de horas no da > 40
+        if creds is not None:
+            if (creds < 0) or (creds > 16):
+                raise forms.ValidationError("Error: Valor de créditos fuera de rango")
+        
+        if (year is not None) and (year > 2017 or year < 1969):
+            raise forms.ValidationError("Error: Valor del año inválido")
+
+        # Validar que no exista un programa con mismo cod y per
+        if (year is not None) and (trim != "NN"):
+            progs = Programa.objects.all().filter(codigo=cod, fecha_vigtrim=trim, fecha_vigano=year)
+            if progs.exists():
+                raise forms.ValidationError("Error: Ya existe un programa en SIGPAE con el mismo código y período")
+
+        print(cleaned_data)
+        # Verificar que campos obligatorios no esten vacios
+        if pasa == "PASA":
+            if cod == '':
+                raise forms.ValidationError("Error: Para guardar como P.A.S.A. debe tener código")
+            if asig == '':
+                raise forms.ValidationError("Error: Para guardar como P.A.S.A. debe tener denominación")
+            #fecha/perido
+            if year is None:
+                raise forms.ValidationError("Error: Para guardar como P.A.S.A. debe tener fecha")
+            if trim == 'NN':
+                raise forms.ValidationError("Error: Para guardar como P.A.S.A. debe tener fecha")
+            #horas teo, lab, prac
+            if h_lab is None:
+                raise forms.ValidationError("Error: Para guardar como P.A.S.A. debe tener horas de laboratorio")
+            if h_teo is None:
+                raise forms.ValidationError("Error: Para guardar como P.A.S.A. debe tener horas de teoría")
+            if h_prac is None:
+                raise forms.ValidationError("Error: Para guardar como P.A.S.A. debe tener horas de práctica")
+            if sinop == '':
+                raise forms.ValidationError("Error: Para guardar como P.A.S.A. debe tener contenidos sinópticos")
+            if fuentes == '':
+                raise forms.ValidationError("Error: Para guardar como P.A.S.A. debe tener fuentes")
+
+        
 
 class SearchForm(forms.ModelForm):
     class Meta:
