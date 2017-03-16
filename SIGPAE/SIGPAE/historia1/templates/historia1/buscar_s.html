@@ -1,0 +1,66 @@
+{% extends 'historia1/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row">
+    <center><h1>BUSCAR DOCUMENTOS P.A.S.A.</h1></center>
+  <div class="col-md-4">
+  </div>
+  <div class="col-md-4">
+    <div class="panel">
+      <div class="panel-body">
+                <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {% if form.non_field_errors %}
+                  {% for error in form.non_field_errors %}
+                    <div class="alert alert-danger">{{error}}</div>
+                  {% endfor %}
+                {% endif %}
+                  {% for field in form %}
+                  <div class="form-group" id="{{field.auto_id}}">
+                    {% if field.errors %}
+                      {% for error in field.errors %}
+                        <div class="alert alert-danger" role="alert">{{ error }}</div>
+                      {% endfor %}
+                    {% endif %}
+                    {{ field.label_tag }} {{ field }}
+                  </div>
+                  {% endfor %}
+                    <button class="btn btn-primary btn-lg btn-block" type="submit">Buscar</button>
+                </form>
+                
+                <a style="margin-top: 10px;" href="/consultar" role="button" class="btn btn-primary">Regresar</a>
+      </div>
+    </div>
+  </div>
+</div>
+<div class ="row">
+  <div class="col-md-4">
+  </div>
+    <div class="col-md-4">
+    {% if query %}
+    <table class="table table-striped table-hover">
+    <thead>
+      <tr><th>CÓDIGO</th>
+      <th>AÑO</th>
+      <th>TRIMESTRE</th>
+      <th></th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for item in query%}
+      <tr>
+      <td>{{item.codigo}}</td>
+      <td>{{item.year}}</td>
+      <td>{{item.trimestre}}</td>
+      <td><a href="{% url "view_s" item.id %}" role="button" class="btn btn-primary"">Ver</a></td>
+      </tr>
+      {% endfor %}
+      </tbody>
+      </table>
+      {% elif request.method == 'POST' and not query %}
+      <div class="alert alert-danger">No se encontraron resultados. Intente de nuevo</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

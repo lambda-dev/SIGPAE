@@ -1,0 +1,24 @@
+{% extends 'historia1/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="row">
+<center><h1>CONSULTAR DOCUMENTO P.A.S.A.</h1></center>
+  <div class="col-md-4"></div>
+  <div class="col-md-4">
+    <div class="panel">
+      <div class="panel-body">
+          {% for field in form %}
+          <div class="form-group" id="{{field.auto_id}}">
+            {{ field.label_tag }} {{ field }}
+          </div>
+          {% endfor %}
+        
+        <a style="margin-top: 10px;" href="/consultar/s" role="button" class="btn btn-primary">Regresar</a>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+{% endblock %}

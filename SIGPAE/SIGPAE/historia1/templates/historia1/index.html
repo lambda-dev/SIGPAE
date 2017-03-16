@@ -2,11 +2,22 @@
 {% load static %}
 
 {% block content %}
+<center><div class="page-header">
+  <h1>SIGPAE-Históricos</h1>
+  <h2><small>Sistema de Gestión de Programas Analíticos de Estudio</small></h2>
+</div></center>
 <div class="row">
   <div class="col-md-4">
   </div>
   <div class="col-md-4">
-    <h1>SIGPAE</h1>
+  {% if request.GET.msg %}
+    {% if request.GET.msg == "pasa_saved"%}
+      <div class="alert alert-success">Ha sido guardada la solicitud de documento P.A.S.A.</div>
+    {% endif %}
+    {% if request.GET.msg == "error"%}
+      <div class="alert alert-danger">Ha ocurrido un error. Intente de nuevo.</div>
+    {% endif %}
+  {% endif %}
     <div class="panel">
       <div class="panel-body">
         <a href="/upload" role="button" class="btn btn-primary btn-lg btn-block">Subir PDF</a>
