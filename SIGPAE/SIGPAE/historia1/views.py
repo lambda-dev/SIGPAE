@@ -108,7 +108,7 @@ def model_form_upload(request):
             doc.save()
 
             return redirect('editar_t', doc.id)
-    else:        
+    else:
         form = DocumentForm()
 
     return render(request,'historia1/model_form_upload.html', {
@@ -159,7 +159,7 @@ def editar_t(request, pk):
             month = 9
 
         temp = form.save(commit=False)
-        if form.cleaned_data['year'] is not None: 
+        if form.cleaned_data['year'] is not None:
             fecha = date(form.cleaned_data['year'], month, 1)
             temp.fecha = fecha
 
@@ -168,7 +168,7 @@ def editar_t(request, pk):
             value = l.cleaned_data.get('value')
             c = CamposExtra(nombre=nombre,value=value)
             c.save()
-            c.doc.add(doc)
+            c.document.add(doc)
             c.save()
 
         temp.codigo = form.cleaned_data['codigo'].upper()
@@ -183,18 +183,18 @@ def editar_t(request, pk):
 
 
 
-    return render(request, 'historia1/editar.html', {'strng': strng, 'url': url, 'form_s': form, 
+    return render(request, 'historia1/editar.html', {'strng': strng, 'url': url, 'form_s': form,
                                                     'requeridos':requeridos,'form_':form_,'act':y})
 
 def form_pasa(request, pk):
     if request.method == 'POST':
         doc = get_object_or_404(Document, pk=pk)
         form = PASAForm(request.POST or None, instance=doc)
-        
+
         if form.is_valid():
             form.save()
             return redirect('/?msg=pasa_saved')
-            
+
         return render(request, 'historia1/pasa.html', {'form':form, 'pk':pk})
     return redirect('/?msg=error')
 

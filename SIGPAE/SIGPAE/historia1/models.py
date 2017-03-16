@@ -5,7 +5,7 @@ from django.db import models
 class Programa(models.Model):
   TRIMESTRES = (
       ('AB', 'Abril - Julio'),
-      ('EM', 'Enero - Marzo'), 
+      ('EM', 'Enero - Marzo'),
       ('SD', 'Septiembre - Diciembre'),
       ('NN', 'Ninguno')
     )
@@ -65,7 +65,7 @@ class Document(models.Model):
     nombre = models.CharField('Nombre', max_length=128,blank=False)
     email = models.EmailField('Email', blank=False)
     telefono = models.CharField('Teléfono', max_length=30, blank=False)
-    
+
     opciones = (
       ('PASA', 'P.A.S.A.'),
       ('TRAN', 'Transcripción')
@@ -83,7 +83,7 @@ class Document(models.Model):
 
     TRIMESTRES = (
       (AB, 'Abril - Julio'),
-      (EM, 'Enero - Marzo'), 
+      (EM, 'Enero - Marzo'),
       (SD, 'Septiembre - Diciembre'),
       (NN, 'Ninguno')
       )
