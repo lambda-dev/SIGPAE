@@ -6,6 +6,7 @@ from . import views
 
 urlpatterns = [
     url(r'^upload/$', views.model_form_upload, name='model_form_upload'),
+    url(r'^editar_/$', views.nueva_vista, name='nueva_vista'),
     url(r'^editar/(?P<pk>\d+)$', views.editar_t, name='editar_t'),
     url(r'^datospasa/(?P<pk>\d+)$', views.form_pasa, name='form_pasa'),
     url(r'^consultar/$', views.buscar, name='buscar'),
@@ -16,5 +17,5 @@ urlpatterns = [
     url(r'^consultar/pasa/(?P<pk>\d+)$', views.view_s, name='view_s'),
     url(r'^$', views.index, name='index'),
 
-    
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,8 +1,12 @@
+from .forms import *
+from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import DocumentForm, SaveForm, SearchForm, SearchFormProg, ViewProgForm, PASAForm, ViewPASAForm
-from .models import Document, Programa
+from .models import *
 from readpdf import *
 from datetime import *
+from django import forms
+from django.forms.formsets import formset_factory
+from django.db import IntegrityError, transaction
 import os
 # Create your views here.
 from django.http import HttpResponse, HttpResponseRedirect
@@ -104,8 +108,9 @@ def model_form_upload(request):
             doc.save()
 
             return redirect('editar_t', doc.id)
-    else:
+    else:        
         form = DocumentForm()
+
     return render(request,'historia1/model_form_upload.html', {
     'form' : form, 'error': error
     })
@@ -121,12 +126,30 @@ def editar_t(request, pk):
     doc = get_object_or_404(Document, pk=pk)
     url = doc.document.url
     strng = doc.pdf_to_text
+    campos = ['asignatura','codigo','creditos','year', 'trimestre','fecha',
+            'departamento','requisitos','justificacion','objetivos','contenidos',
+            'metodologias','evaluacion','bibliografias','horas_teoria','horas_lab',
+            'horas_practica','guardar']
 
     if doc.guardar == 'PASA':
         return redirect('index')
 
+    FormSet = formset_factory(ExtraFields, formset=BaseLinkFormSet)
+    requeridos = ['requisitos','objetivos','metodologias','evaluacion','justificacion']
+
+    y = {}
+    for x in campos:
+        y_x=doc.__getattribute__(x)
+        if y_x is not None and y_x != '':
+            y[x] = y_x
+
+
+    data = CamposExtra.objects.filter(document=doc)
+    initial_data = [{'nombre':d.nombre,'value':d.value} for d in data]
+
+    form_ = FormSet(request.POST or None, initial = initial_data)
     form = SaveForm(request.POST or None, instance=doc)
-    if form.is_valid():
+    if form.is_valid() and form_.is_valid():
         month = 1
         if form.cleaned_data['trimestre'] == 'EM':
             month = 1
@@ -140,6 +163,14 @@ def editar_t(request, pk):
             fecha = date(form.cleaned_data['year'], month, 1)
             temp.fecha = fecha
 
+        for l in form_:
+            nombre = l.cleaned_data.get('nombre')
+            value = l.cleaned_data.get('value')
+            c = CamposExtra(nombre=nombre,value=value)
+            c.save()
+            c.doc.add(doc)
+            c.save()
+
         temp.codigo = form.cleaned_data['codigo'].upper()
         temp.pdf_to_text = strng
         temp.save()
@@ -150,7 +181,10 @@ def editar_t(request, pk):
         else:
             return redirect('/editar/'+pk+'?msg=saved')
 
-    return render(request, 'historia1/editar.html', {'strng': strng, 'url': url, 'form_s': form})
+
+
+    return render(request, 'historia1/editar.html', {'strng': strng, 'url': url, 'form_s': form, 
+                                                    'requeridos':requeridos,'form_':form_,'act':y})
 
 def form_pasa(request, pk):
     if request.method == 'POST':
@@ -164,5 +198,83 @@ def form_pasa(request, pk):
         return render(request, 'historia1/pasa.html', {'form':form, 'pk':pk})
     return redirect('/?msg=error')
 
+def nueva_vista(request):
+    name = request.session['name']
+    document = Document.objects.get(name=name)
+    campos = ['name','description','asignatura','codigo','creditos','requisitos','objetivos','contenidos',
+    'metodologias','evaluacion','bibliografias','horas_teoria','fecha','horas_lab',
+    'horas_practica','year','justificacion','trimestre','departamento']
 
-   
+    FormSet = formset_factory(ExtraFields, formset=BaseLinkFormSet)
+    # fields = CamposExtra.objects.find(document = document)
+    # data = [{'nombre':l.nombre, 'value': l.value, 'document':l.document} for l in fields]
+
+    requeridos = ['requisitos','objetivos','metodologias','evaluacion','justificacion']
+
+    y = {}
+    for x in campos:
+        y_x=document.__getattribute__(x)
+        if y_x is not None and y_x != '':
+            y[x] = y_x
+
+    if request.method == 'POST':
+
+        form_ = FormSet(request.POST)
+        form = SaveForm(request.POST, instance=document)
+        if form.is_valid() and form_.is_valid():
+            month = 1
+            if form.cleaned_data['trimestre'] == 'EM':
+                month = 1
+            elif form.cleaned_data['trimestre'] == 'AB':
+                month = 4
+            elif form.cleaned_data['trimestre'] == 'SD':
+                month = 9
+            fecha = date(form.cleaned_data['year'], month, 1)
+            temp = form.save(commit=False)
+            temp.fecha = fecha
+
+            print('a')
+
+            #new = []
+            for l in form_:
+                print('guradadsadas')
+                nombre = l.cleaned_data.get('nombre')
+                value = l.cleaned_data.get('value')
+                c = CamposExtra(nombre=nombre,value=value)
+                c.save()
+                c.document.add(document)
+                c.save()
+                #new.append(c)
+            #
+            # try:
+            #     with transaction.atomic():
+            #         CamposExtra.objects.bulk_create(new)
+            #         #messages.success(request, 'You have updated your profile.')
+            #
+            # except IntegrityError: #If the transaction failed
+            #     messages.error(request, 'Error al guardar')
+
+
+            return redirect('model_form_upload')
+        else:
+            strng = request.session['strng']
+            url = request.session['url']
+            form_s = SaveForm(instance = document)
+
+            print('b')
+            return render(request,'historia1/editar_.html', {'strng': strng, 'url': url, 'form_s': form,
+            'requeridos':requeridos,'form_':form_,'act':y})
+
+    else:
+        strng = request.session['strng']
+        url = request.session['url']
+        form_s = SaveForm(instance = document)
+        data = CamposExtra.objects.filter(document=document)
+        initial_data = [{'nombre':d.nombre,'value':d.value} for d in data]
+        form_ = FormSet(initial = initial_data)
+
+        #print (y)
+
+        print('c')
+        return render(request,'historia1/editar_.html', {'strng': strng, 'url': url,
+         'form_s': form_s,'requeridos':requeridos,'form_':form_,'act':y})

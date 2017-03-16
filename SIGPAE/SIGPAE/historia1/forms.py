@@ -1,5 +1,6 @@
 from django import forms
-from .models import Document, Programa
+from django.forms.formsets import BaseFormSet
+from .models import *
 
 class PASAForm(forms.ModelForm):
     class Meta:
@@ -18,9 +19,14 @@ class DocumentForm(forms.ModelForm):
             self.fields['scanned'].label = "Utilizar Reconocimiento de Caracteres:"
 
 class SaveForm(forms.ModelForm):
+
     class Meta:
         model = Document
-        fields = ['pdf_to_text', 'asignatura','codigo','creditos','year', 'trimestre','fecha','departamento','requisitos','objetivos','contenidos','metodologias','evaluacion','bibliografias','horas_teoria','horas_lab','horas_practica','guardar']
+        fields = ['asignatura','codigo','creditos','year', 'trimestre','fecha','departamento','requisitos','justificacion','objetivos','contenidos','metodologias','evaluacion','bibliografias','horas_teoria','horas_lab','horas_practica','guardar']
+        
+        def __init__(self, *args, **kwargs):
+            super(SaveForm, self).__init__(*args, **kwargs)
+        
 
     def clean(self):
         cleaned_data = super(SaveForm, self).clean()
@@ -96,7 +102,6 @@ class SaveForm(forms.ModelForm):
             if fuentes == '':
                 raise forms.ValidationError("Error: Para guardar como P.A.S.A. debe tener fuentes")
 
-        
 
 class SearchForm(forms.ModelForm):
     class Meta:
@@ -183,3 +188,29 @@ class ViewPASAForm(forms.ModelForm):
         self.fields['horas_teoria'].disabled = True
         self.fields['horas_lab'].disabled = True
         self.fields['horas_practica'].disabled = True
+
+class ExtraFields(forms.ModelForm):
+
+    class Meta:
+        model = CamposExtra
+        fields = ['nombre','value']
+
+        def __init__(self, *args, **kwargs):
+            super(ExtraFields, self).__init__(*args, **kwargs)
+            self.fields['nombre'].required = True
+            self.fields['value'].required = True
+            self.fields['nombre'].label = "Nombre:"
+            self.fields['value'].label = "Texto:"
+
+class BaseLinkFormSet(BaseFormSet):
+    def clean(self):
+        """Checks that no two articles have the same title."""
+        if any(self.errors):
+            # Don't bother validating the formset unless each form is valid on its own
+            return
+        titles = []
+        for form in self.forms:
+            title = form.cleaned_data['nombre']
+            if title in titles:
+                raise forms.ValidationError("Los campos deben tener nombres distintos")
+            titles.append(title)

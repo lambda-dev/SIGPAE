@@ -12,6 +12,30 @@
     {% endif %}
   {% endif %}
 
+    <div class="addFields">
+      <button id="agregar" class="btn btn-primary col-md-12" type="button">Agregar Campo</button>
+
+      <div id="tipoCampo" hidden>
+        <select id="select">
+
+          <option selected disabled hidden value="">Seleccione Un Tipo de Campo a Agregar</option>
+
+          <optgroup label="Campos Normados">
+            <option value="1">Requisitos</option>
+            <option value="2">Objetivos</option>
+            <option value="3">Estrategias Metodológicas</option>
+            <option value="4">Estrategias de Evaluación</option>
+          </optgroup>
+
+          <optgroup label="Campos Adicionales">
+            <option value="5">Justificación</option>
+            <option value="6">Ninguna de las Anteriores</option>
+          </optgroup>
+
+        </select>
+        <button id="nuevoCampo" class="btn btn-primary">Agregar</button>
+      </div>
+    </div>
 
     <div class="col-md-5 col-sm-5">
       <object data='{{url}}' 
@@ -30,28 +54,65 @@
 
     <div class="col-md-3 col-sm-3">
     <form method="post" enctype="multipart/form-data">
-      
-                {% if form_s.non_field_errors %}
-                  {% for error in form_s.non_field_errors %}
-                   <div class="alert alert-danger" role="alert"> {{error}}</div>
-                  {% endfor %}
-                {% endif %}
+      {% if form_s.non_field_errors %}
+        {% for error in form_s.non_field_errors %}
+         <div class="alert alert-danger" role="alert"> {{error}}</div>
+        {% endfor %}
+      {% endif %}
      
       {% csrf_token %}
       {% for field in form_s %}
-        {% if field.name != "pdf_to_text" %}
-          <div class="form-group" id="{{field.auto_id}}">
+
+        {% if field.name in requeridos %}
+
+          {% if field.name not in act %}
+
+            <div class="form-group" id="{{field.auto_id}}" hidden>
             {{ field.label_tag }} {{ field }}
             </div>
             {% if field.errors %}
               {% for error in field.errors %}
-                <div class="alert alert-danger" role="alert">{{ error }}</div>
+                <div class="alert alert-danger" role="alert" hidden>{{ error }}</div>
               {% endfor %}
             {% endif %}
-           
+
+          {% else %}
+
+            <div class="form-group" id="{{field.auto_id}}">
+              {{ field.label_tag }} {{ field }}
+              </div>
+              {% if field.errors %}
+                {% for error in field.errors %}
+                  <div class="alert alert-danger" role="alert">{{ error }}</div>
+                {% endfor %}
+              {% endif %}
+
+          {% endif %}
+
+        {% else %}
+
+            <div class="form-group" id="{{field.auto_id}}">
+              {{ field.label_tag }} {{ field }}
+              </div>
+              {% if field.errors %}
+                {% for error in field.errors %}
+                  <div class="alert alert-danger" role="alert">{{ error }}</div>
+                {% endfor %}
+              {% endif %}
+
         {% endif %}
+
       {% endfor %}
-      <div style="display:none;" id="msg" class="alert alert-warning">Recuerde que todos los campos <strong>obligatorios</strong> deben estar <strong>llenos</strong> y cumplir sus <strong>restricciones</strong></div>
+
+      {{ form_.management_form }}
+      {% for field in form_%}
+        <div class="formset">
+          {{ field.errors }}
+          {{ field.label_tag }} {{ field }}
+        </div>
+      {% endfor %}
+
+      <div style="display:none;" id="msg" class="alert alert-warning">Recuerde que para ser P.A.S.A. todos los campos <strong>obligatorios</strong> deben estar <strong>llenos</strong> y cumplir sus <strong>restricciones</strong></div>
       <button class="btn btn-primary btn-lg" type="submit">Guardar</button>
 
     <script>
@@ -76,4 +137,49 @@
     </div>
   </div>
 </div>
+
+<script>
+
+  $('.formset').formset({
+        addText: 'add link',
+        deleteText: 'remove'
+    });
+
+  $('#agregar').on('click',function(){
+    $("#tipoCampo").show();
+  });
+
+  var delete_click = $('.delete-row').last();
+  delete_click.click();
+  $('.add-row').hide();
+  $('.delete-row').hide();
+
+  $('#nuevoCampo').on('click',function(){
+    x = $('select').val();
+    console.log(x);
+    switch (x) {
+      case '1':
+        $('.form-group:contains(Requisitos:)').show();
+        break;
+      case '2':
+        $('.form-group:contains(Objetivos:)').show();
+        break;
+      case '3':
+        $('.form-group:contains(Estrategias Metodológicas:)').show();
+        break;
+      case '4':
+        $('.form-group:contains(Estrategias de Evaluación:)').show();
+        break;
+      case '5':
+        $('.form-group:contains(Justificación:)').show()
+        break;
+      default:
+        $('.add-row').click();
+        break;
+    }
+  $('#select').prop('selectedIndex',0);
+  $("#tipoCampo").hide();
+  $('.delete-row').hide();
+  });
+</script>
 {% endblock %}

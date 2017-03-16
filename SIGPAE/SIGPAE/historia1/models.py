@@ -40,6 +40,7 @@ class Programa(models.Model):
 
 # Create your models here.
 class Document(models.Model):
+
     name = models.CharField(max_length=255)
     description = models.CharField('Descripción',max_length=255, blank=True)
     document = models.FileField('Documento A Subir',upload_to='documents')
@@ -60,6 +61,7 @@ class Document(models.Model):
     pdf_to_text = models.TextField(blank=True)
     year = models.IntegerField('Año',blank=True, validators=[MaxValueValidator(2017), MinValueValidator(1969)], null=True)
     scanned = models.BooleanField('Utilizar Reconocimiento de Caracteres',blank=True)
+    justificacion = models.TextField('Justificación', blank=True, null=True)
     nombre = models.CharField('Nombre', max_length=128,blank=False)
     email = models.EmailField('Email', blank=False)
     telefono = models.CharField('Teléfono', max_length=30, blank=False)
@@ -235,3 +237,11 @@ class Document(models.Model):
 
     def get_absolute_url(self):
       return reverse('editar_t', kwargs={'pk': self.pk})
+
+class CamposExtra(models.Model):
+    nombre = models.CharField('Nombre', max_length=255, blank=False)
+    value = models.TextField('Texto', blank=False)
+    document = models.ManyToManyField(Document, blank=False)
+
+    def __str__(self):
+        return self.nombre

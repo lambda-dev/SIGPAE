@@ -1,0 +1,141 @@
+{% extends 'historia1/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <h1 style="text-align:center;">Transcripción</h1>
+
+    <div class="addFields">
+      <button id="agregar" class="btn btn-primary col-md-12" type="button">Agregar Campo</button>
+
+      <div id="tipoCampo" hidden>
+        <select id="select">
+
+          <option selected disabled hidden value="">Seleccione Un Tipo de Campo a Agregar</option>
+
+          <optgroup label="Campos Normados">
+            <option value="1">Requisitos</option>
+            <option value="2">Objetivos</option>
+            <option value="3">Estrategias Metodológicas</option>
+            <option value="4">Estrategias de Evaluación</option>
+          </optgroup>
+
+          <optgroup label="Campos Adicionales">
+            <option value="5">Justificación</option>
+            <option value="6">Ninguna de las Anteriores</option>
+          </optgroup>
+
+        </select>
+        <button id="nuevoCampo" class="btn btn-primary">Agregar</button>
+      </div>
+    </div>
+
+    <div class="col-md-5">
+      <object data='{{url}}'
+          type='application/pdf'
+          width='100%'
+          height='700px'/></object>
+    </div>
+
+    <div class="col-md-4">
+      <textareal>
+        <p style="text-align: center;">
+          {{strng}}
+        </p>
+      </textareal>
+    </div>
+
+    <div class="col-md-3">
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      {% for field in form_s %}
+
+        {% if field.name in requeridos %}
+
+          {% if field.name not in act %}
+            <div class="form-group" hidden>
+              {{ field.errors }}
+              {{ field.label_tag }} {{ field }}
+            </div>
+          {% else %}
+            <div class="form-group">
+               {{ field.errors }}
+               {{ field.label_tag }} {{ field }}
+            </div>
+          {% endif %}
+
+        {% else %}
+        <div class="form-group">
+            {{ field.errors }}
+            {{ field.label_tag }} {{ field }}
+          </div>
+        {% endif %}
+
+      {% endfor %}
+
+      {{ form_.management_form }}
+
+      {% for field in form_%}
+
+        <div class="formset">
+          {{ field.errors }}
+          {{ field.label_tag }} {{ field }}
+        </div>
+
+      {% endfor %}
+
+
+      <button class="btn btn-primary btn-lg btn-block" type="submit">Guardar</button>
+    </form>
+
+    </div>
+  </div>
+</div>
+
+<script>
+
+  $('.formset').formset({
+        addText: 'add link',
+        deleteText: 'remove'
+    });
+
+  $('#agregar').on('click',function(){
+    $("#tipoCampo").show();
+  });
+
+  var delete_click = $('.delete-row').last();
+  delete_click.click();
+  $('.add-row').hide();
+  $('.delete-row').hide();
+
+  $('#nuevoCampo').on('click',function(){
+    x = $('select').val();
+    console.log(x);
+    switch (x) {
+      case '1':
+        $('.form-group:contains(Requisitos:)').show();
+        break;
+      case '2':
+        $('.form-group:contains(Objetivos:)').show();
+        break;
+      case '3':
+        $('.form-group:contains(Estrategias Metodológicas:)').show();
+        break;
+      case '4':
+        $('.form-group:contains(Estrategias de Evaluación:)').show();
+        break;
+      case '5':
+        $('.form-group:contains(Justificación:)').show()
+        break;
+      default:
+        $('.add-row').click();
+        break;
+    }
+  $('#select').prop('selectedIndex',0);
+  $("#tipoCampo").hide();
+  $('.delete-row').hide();
+  });
+</script>
+{% endblock %}
