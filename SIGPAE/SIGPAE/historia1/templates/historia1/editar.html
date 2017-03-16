@@ -6,13 +6,7 @@
   <div class="row">
 
     <h1 style="text-align:center;">Transcripción</h1>
-    <div class="col-md-4">
-      <textarea>
-        <p style="text-align: center;">
-          {{strng.texto}}
-        </p>
-      </textarea>
-    </div>
+
 
     <div class="col-md-5">
       <object data='{{url}}' 
@@ -21,41 +15,202 @@
           height='700px'/></object>
     </div>
 
+    <div class="col-md-4">
+      <textareal>
+        <p style="text-align: center;">
+          {{strng}}
+        </p>
+      </textareal>
+    </div>
+
     <div class="col-md-3">
-      <div class="form-group">
-      <label for="nombre">Nombre de Asignatura</label>
-      <input class="varios form-control" id="nombre">
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+                   
+      {% for field in form_s %}
+      <div class="form-group" id="{{field.auto_id}}">
+        {% if field.errors %}
+          {% for error in field.errors %}
+            <div class="alert alert-danger" role="alert">{{ error }}</div>
+          {% endfor %}
+        {% endif %}
+        {{ field.label_tag }} {{ field }}
+      </div>
+      {% endfor %}
+
+      <div id="0">
+      {% for field in form_1 %}
+      <div class="formset" id="{{field.auto_id}}">
+        {% if field.errors %}
+          {% for error in field.errors %}
+            <div class="alert alert-danger" role="alert">{{ error }}</div>
+          {% endfor %}
+        {% endif %}
+        {{ field.label_tag }} {{ field }}
+      </div>
+      {% endfor %}
+
+      {{ form_2.management_form }}
+      {% for field in form_2 %}
+      <div class="formset_" id="{{field.auto_id}}">
+        {% if field.errors %}
+          {% for error in field.errors %}
+            <div class="alert alert-danger" role="alert">{{ error }}</div>
+          {% endfor %}
+        {% endif %}
+        {{ field.label_tag }} {{ field }}
+      </div>
+      {% endfor %}
       </div>
 
-      <div class="form-group">
-      <label>Código de Asignatura</label>
-      <input type="text" class="varios form-control">
+      <div id="1">
+      {% for field in form_3 %}
+      <div class="formset" id="{{field.auto_id}}">
+        {% if field.errors %}
+          {% for error in field.errors %}
+            <div class="alert alert-danger" role="alert">{{ error }}</div>
+          {% endfor %}
+        {% endif %}
+        {{ field.label_tag }} {{ field }}
+      </div>
+      {% endfor %}
+
+      {{ form_4.management_form }}
+      {% for field in form_4 %}
+      <div class="formset_1" id="{{field.auto_id}}">
+        {% if field.errors %}
+          {% for error in field.errors %}
+            <div class="alert alert-danger" role="alert">{{ error }}</div>
+          {% endfor %}
+        {% endif %}
+        {{ field.label_tag }} {{ field }}
+      </div>
+      {% endfor %}
       </div>
 
-      <div class="form-group">
-      <label>Créditos</label>
-      <input class="form-control" type="number" class="varios">
+
+      <div id="2">
+      {% for field in form_5 %}
+      <div class="formset" id="{{field.auto_id}}">
+        {% if field.errors %}
+          {% for error in field.errors %}
+            <div class="alert alert-danger" role="alert">{{ error }}</div>
+          {% endfor %}
+        {% endif %}
+        {{ field.label_tag }} {{ field }}
+      </div>
+      {% endfor %}
+
+      {{ form_6.management_form }}
+      {% for field in form_6 %}
+      <div class="formset_2" id="{{field.auto_id}}">
+        {% if field.errors %}
+          {% for error in field.errors %}
+            <div class="alert alert-danger" role="alert">{{ error }}</div>
+          {% endfor %}
+        {% endif %}
+        {{ field.label_tag }} {{ field }}
+      </div>
+      {% endfor %}
       </div>
 
-      <h3>Objetivos</h3>
-      <textareat class="varios">
-      </textareat>
 
-      <h3>Período Vigencia</h3>
-      <div class="form-group">
-      <label>Trimestre</label>
-      <select class="form-control">
-        <option value="EM">Enero - Marzo</option>
-        <option value="AJ">Abril - Julio</option>
-        <option value="SD">Septiembre - Diciembre</option>
-      </select>
+      <div id="3">
+      {% for field in form_7 %}
+      <div class="formset" id="{{field.auto_id}}">
+        {% if field.errors %}
+          {% for error in field.errors %}
+            <div class="alert alert-danger" role="alert">{{ error }}</div>
+          {% endfor %}
+        {% endif %}
+        {{ field.label_tag }} {{ field }}
       </div>
+      {% endfor %}
+
+      {{ form_8.management_form }}
+      {% for field in form_8 %}
+      <div class="formset_3" id="{{field.auto_id}}">
+        {% if field.errors %}
+          {% for error in field.errors %}
+            <div class="alert alert-danger" role="alert">{{ error }}</div>
+          {% endfor %}
+        {% endif %}
+        {{ field.label_tag }} {{ field }}
+      </div>
+      {% endfor %}
+      </div>
+
+
+      <div id="4">
+      {% for field in form_9 %}
+      <div class="formset" id="{{field.auto_id}}">
+        {% if field.errors %}
+          {% for error in field.errors %}
+            <div class="alert alert-danger" role="alert">{{ error }}</div>
+          {% endfor %}
+        {% endif %}
+        {{ field.label_tag }} {{ field }}
+      </div>
+      {% endfor %}
+
+      {{ form_10.management_form }}
+      {% for field in form_10 %}
+      <div class="formset_4" id="{{field.auto_id}}">
+        {% if field.errors %}
+          {% for error in field.errors %}
+            <div class="alert alert-danger" role="alert">{{ error }}</div>
+          {% endfor %}
+        {% endif %}
+        {{ field.label_tag }} {{ field }}
+      </div>
+      {% endfor %}
+      </div>
+
+      <button class="btn btn-primary" id="agRef" type="button">Agregar Referencia</button>
       
-      <div class="form-group">
-      <label>Año</label>
-      <input class="form-control" type="number" min="1969" max="2017" step="1" value="2017" />
-      </div>
+      <button class="btn btn-primary btn-lg btn-block" type="submit">Guardar</button>
+
+
+    </form>
+
     </div>
   </div>
 </div>
+<script>
+  $('.formset_').formset({
+        addText: 'agregar autor',
+        deleteText: 'remove'
+    });
+  $('.formset_1').formset({
+        addText: 'agregar autor',
+        deleteText: 'remove'
+    });
+  $('.formset_2').formset({
+        addText: 'agregar autor',
+        deleteText: 'remove'
+    });
+  $('.formset_3').formset({
+        addText: 'agregar autor',
+        deleteText: 'remove'
+    });
+  $('.formset_4').formset({
+        addText: 'agregar autor',
+        deleteText: 'remove'
+    });
+
+  var i = 1
+  x = '.formset_'
+
+  for (j=1;j<5;j++){
+    y = '#' + j.toString();
+    $(y).hide();
+  }
+
+  $('#agRef').on('click',function(){
+    y = '#' + i.toString();
+    $(y).show();
+    i += 1
+  });
+
+</script>
 {% endblock %}

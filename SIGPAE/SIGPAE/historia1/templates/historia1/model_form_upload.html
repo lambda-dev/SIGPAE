@@ -1,11 +1,11 @@
 {% extends 'historia1/base.html' %}
 
 {% block content %}
-
+    <center><h1>CARGAR PDF</h1></center>
     <div class="col-md-4">
     </div>
     <div class="col-md-4">
-        <h1>PDF A TEXTO</h1>
+        <font color='red'>{{error}}</font>
         <div class="panel">
             <div class="panel-body">
                 <form method="post" enctype="multipart/form-data">
@@ -13,7 +13,9 @@
                     {{ form.as_p }}
                     <button class="btn btn-primary btn-lg btn-block" type="submit">Siguiente</button>
                 </form>
+                <a href="../" role="button" class="btn btn-primary">Regresar</a>
             </div>
+
         </div>
     </div>
     <div class="col-md-4">
