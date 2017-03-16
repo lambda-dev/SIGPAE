@@ -12,6 +12,24 @@
     {% endif %}
   {% endif %}
 
+
+    <div class="col-md-5 col-sm-5">
+      <object data='{{url}}' 
+          type='application/pdf' 
+          width='100%' 
+          height='700px'/></object>
+    </div>
+
+    <div class="col-md-4 col-sm-4">
+      <textareal id="id_pdf_to_text" name="pdf_to_text" width='100%'>
+        <p style="text-align: center;">
+          {{strng}}
+        </p>
+      </textareal>
+    </div>
+
+    <div class="col-md-3 col-sm-3">
+
     <div class="addFields">
       <button id="agregar" class="btn btn-primary col-md-12" type="button">Agregar Campo</button>
 
@@ -36,23 +54,6 @@
         <button id="nuevoCampo" class="btn btn-primary">Agregar</button>
       </div>
     </div>
-
-    <div class="col-md-5 col-sm-5">
-      <object data='{{url}}' 
-          type='application/pdf' 
-          width='100%' 
-          height='700px'/></object>
-    </div>
-
-    <div class="col-md-4 col-sm-4">
-      <textareal id="id_pdf_to_text" name="pdf_to_text" width='100%'>
-        <p style="text-align: center;">
-          {{strng}}
-        </p>
-      </textareal>
-    </div>
-
-    <div class="col-md-3 col-sm-3">
     <form method="post" enctype="multipart/form-data">
       {% if form_s.non_field_errors %}
         {% for error in form_s.non_field_errors %}

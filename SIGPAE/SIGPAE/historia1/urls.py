@@ -6,7 +6,6 @@ from . import views
 
 urlpatterns = [
     url(r'^upload/$', views.model_form_upload, name='model_form_upload'),
-    url(r'^editar_/$', views.nueva_vista, name='nueva_vista'),
     url(r'^editar/(?P<pk>\d+)$', views.editar_t, name='editar_t'),
     url(r'^datospasa/(?P<pk>\d+)$', views.form_pasa, name='form_pasa'),
     url(r'^consultar/$', views.buscar, name='buscar'),
