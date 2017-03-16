@@ -163,12 +163,15 @@ def editar_t(request, pk):
             fecha = date(form.cleaned_data['year'], month, 1)
             temp.fecha = fecha
 
+        for d in data:
+            d.delete()
+            
         for l in form_:
             nombre = l.cleaned_data.get('nombre')
             value = l.cleaned_data.get('value')
             c = CamposExtra(nombre=nombre,value=value)
             c.save()
-            c.doc.add(doc)
+            c.document.add(doc)
             c.save()
 
         temp.codigo = form.cleaned_data['codigo'].upper()
