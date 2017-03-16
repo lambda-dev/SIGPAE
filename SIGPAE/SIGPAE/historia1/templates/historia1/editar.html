@@ -9,9 +9,9 @@
 
 
     <div class="col-md-5">
-      <object data='{{url}}' 
-          type='application/pdf' 
-          width='100%' 
+      <object data='{{url}}'
+          type='application/pdf'
+          width='100%'
           height='700px'/></object>
     </div>
 
@@ -25,12 +25,16 @@
 
     <div class="col-md-3">
     <form method="post" enctype="multipart/form-data">
+                    <!--{% csrf_token %}
+                    {{ form_s.as_p }}-->
       {% csrf_token %}
-                   
       {% for field in form_s %}
       <div class="form-group">
         {{ field.errors }}
         {{ field.label_tag }} {{ field }}
+        {% if field.help_text %}
+        <p class="help">{{ field.help_text|safe }}</p>
+        {% endif %}
       </div>
       {% endfor %}
       <button class="btn btn-primary btn-lg btn-block" type="submit">Guardar</button>

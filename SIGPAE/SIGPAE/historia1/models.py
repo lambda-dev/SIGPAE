@@ -4,6 +4,7 @@ from django.db import models
 
 # Create your models here.
 class Document(models.Model):
+
     name = models.CharField(max_length=255)
     description = models.CharField('Descripción',max_length=255, blank=True)
     document = models.FileField('Documento A Subir',upload_to='documents')
@@ -24,6 +25,7 @@ class Document(models.Model):
     pdf_to_text = models.TextField(blank=True)
     year = models.IntegerField('Año',blank=True, null=True, default=2017, validators=[MaxValueValidator(2017), MinValueValidator(1969)])
     scanned = models.BooleanField('Utilizar Reconocimiento de Caracteres',blank=True)
+    justificacion = models.TextField('Justificación', blank=True, null=True)
 
     AB = 'AB'
     EM = 'EM'
@@ -31,7 +33,7 @@ class Document(models.Model):
 
     TRIMESTRES = (
       (AB, 'Abril - Julio'),
-      (EM, 'Enero - Marzo'), 
+      (EM, 'Enero - Marzo'),
       (SD, 'Septiembre - Diciembre')
       )
 
@@ -181,3 +183,12 @@ class Document(models.Model):
 
     def __str__(self):
       return self.name
+
+
+class CamposExtra(models.Model):
+    nombre = models.CharField('Nombre', max_length=255, blank=False)
+    value = models.TextField('Texto', blank=False)
+    document = models.ManyToManyField(Document, blank=False)
+
+    def __str__(self):
+        return self.nombre
