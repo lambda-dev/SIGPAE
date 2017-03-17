@@ -84,9 +84,9 @@ WSGI_APPLICATION = 'SIGPAE.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'sigpae1',
-        'USER': 'postgres',
-        'PASSWORD': '2807',
+        'NAME': 'sigpae',
+        'USER': 'adolfo',
+        'PASSWORD': 'tH5SE4ay',
         'HOST': '127.0.0.1',
         'PORT': '5432',
     }
@@ -114,7 +114,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es'
 
 TIME_ZONE = 'UTC'
 
@@ -129,6 +129,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
-MEDIA_ROOT = '/home/carlosvazquez/Documentos/software/SIG/SIGPAE/SIGPAE/'
+MEDIA_ROOT = '/home/adolfo/Desktop/SIGPAE/SIGPAE/SIGPAE/'
 MEDIA_URL = '/documents/'
 

@@ -1,0 +1,38 @@
+{% extends 'historia1/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row">
+    <center><h1>AÑADIR DATOS</h1></center>
+  <div class="col-md-4">
+  </div>
+  <div class="col-md-4">
+    <div class="panel">
+      <div class="panel-body">
+                <div class="alert alert-warning">Por favor, rellene los datos para procesar la solicitud P.A.S.A.</div>
+                <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {% if form.non_field_errors %}
+                  {% for error in form.non_field_errors %}
+                    <div class="alert alert-danger">{{error}}</div>
+                  {% endfor %}
+                {% endif %}
+                  {% for field in form %}
+                  <div class="form-group" id="{{field.auto_id}}">
+                    {% if field.errors %}
+                      {% for error in field.errors %}
+                        <div class="alert alert-danger" role="alert">{{ error }}</div>
+                      {% endfor %}
+                    {% endif %}
+                    {{ field.label_tag }} {{ field }}
+                  </div>
+                  {% endfor %}
+                    <button class="btn btn-primary btn-lg btn-block" type="submit">Guardar</button>
+                </form>
+                
+                <!--<a href="{% url "editar_t" pk %}" role="button" class="btn btn-primary">Regresar</a>-->
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

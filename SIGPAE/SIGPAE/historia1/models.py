@@ -40,26 +40,41 @@ class Programa(models.Model):
 
 # Create your models here.
 class Document(models.Model):
+
     name = models.CharField(max_length=255)
     description = models.CharField('Descripción',max_length=255, blank=True)
     document = models.FileField('Documento A Subir',upload_to='documents')
     uploaded_at = models.DateTimeField(auto_now_add=True)
     asignatura= models.CharField('Denominación', max_length=255,blank=True)
     codigo= models.CharField('Código', max_length=10,blank=True)
-    creditos= models.PositiveIntegerField('Unidades Créditos', blank=True,null=True, validators=[MaxValueValidator(16), MinValueValidator(0)])
+    creditos= models.PositiveIntegerField('Unidades Créditos',blank=True, null=True, validators=[MaxValueValidator(16), MinValueValidator(0)])
     requisitos= models.TextField('Requisitos', blank=True)
     objetivos= models.TextField('Objetivos', blank=True)
     contenidos= models.TextField('Contenidos Sinópticos', blank=True)
     metodologias=models.TextField('Estrategias Metodológicas', blank=True)
     evaluacion=models.TextField('Estrategias de Evaluación', blank=True)
     bibliografias=models.TextField('Fuentes de Información Recomendadas', blank=True)
-    horas_teoria=models.PositiveIntegerField('Horas de Teoría',blank=True,null=True)
     fecha= models.DateField('Entrada en Vigencia', blank=True,null=True)
-    horas_lab=models.PositiveIntegerField('Horas de Laboratorio',blank=True,null=True)
-    horas_practica=models.PositiveIntegerField('Horas de Práctica', blank=True,null=True)
+    horas_teoria=models.PositiveIntegerField('Horas de Teoría', blank=True,null=True,validators=[MaxValueValidator(40)])
+    horas_lab=models.PositiveIntegerField('Horas de Laboratorio', blank=True,null=True,validators=[MaxValueValidator(40)])
+    horas_practica=models.PositiveIntegerField('Horas de Práctica', blank=True,null=True,validators=[MaxValueValidator(40)])
     pdf_to_text = models.TextField(blank=True)
-    year = models.IntegerField('Año',blank=True, null=True, validators=[MaxValueValidator(2017), MinValueValidator(1969)])
+    year = models.IntegerField('Año',blank=True, validators=[MaxValueValidator(2017), MinValueValidator(1969)], null=True)
     scanned = models.BooleanField('Utilizar Reconocimiento de Caracteres',blank=True)
+    justificacion = models.TextField('Justificación', blank=True, null=True)
+    nombre = models.CharField('Nombre', max_length=128,blank=False)
+    email = models.EmailField('Email', blank=False)
+    telefono = models.CharField('Teléfono', max_length=30, blank=False)
+    
+    opciones = (
+      ('PASA', 'P.A.S.A.'),
+      ('TRAN', 'Transcripción')
+      )
+    guardar = models.CharField('Guardar como:',
+        max_length=4,
+        choices=opciones,
+        default='TRAN',
+    )
 
     AB = 'AB'
     EM = 'EM'
@@ -234,16 +249,10 @@ class Autores(models.Model):
       apellido = models.CharField(max_length=255,blank=True)
       referencia = models.ForeignKey(Referencia, blank=False)
 
-class Rafael(models.Model):
-      titulo = models.CharField(max_length=255)
-      editorial= models.CharField(max_length=255)
-      edicion = models.CharField(max_length=255)
-      name = models.CharField(max_length=255)
-      apellido = models.CharField(max_length=255)
-      document = models.ManyToManyField(Document, blank=False)
+class CamposExtra(models.Model):
+    nombre = models.CharField('Nombre', max_length=255, blank=False)
+    value = models.TextField('Texto', blank=False)
+    document = models.ManyToManyField(Document, blank=False)
 
-
-
-
-
-
+    def __str__(self):
+        return self.nombre

@@ -5,6 +5,10 @@ from django.forms.formsets import formset_factory
 from django.forms import inlineformset_factory
 from readpdf import *
 from datetime import *
+from django.contrib import messages
+from django import forms
+from django.db import IntegrityError, transaction
+
 import os
 # Create your views here.
 from django.http import HttpResponse, HttpResponseRedirect
@@ -15,6 +19,31 @@ def index(request):
 def buscar(request):
     return render(request, 'historia1/buscar.html')
 
+def buscar_s(request):
+    if request.method == 'POST':
+        form = SearchForm(request.POST)
+        docs = False
+        if form.is_valid():
+            codigo = form.cleaned_data['codigo'].upper()
+            year = form.cleaned_data['year']
+            trim = form.cleaned_data['trimestre']
+            if year is not None:
+                docs = Document.objects.all().filter(codigo=codigo,year=year,trimestre=trim,guardar="PASA").order_by('-year')
+            else:
+                docs = Document.objects.all().filter(codigo=codigo,guardar="PASA").order_by('-year')
+        return render(request, 'historia1/buscar_s.html', {'form': form, 'query': docs})
+    else:
+        form = SearchForm()
+        return render(request, 'historia1/buscar_s.html', {'form': form})
+
+def view_s(request, pk):
+    doc = get_object_or_404(Document, pk=pk)
+    if doc.guardar == 'TRAN':
+        return redirect('index')
+
+    form = ViewPASAForm(request.POST or None, instance=doc)
+    return render(request, 'historia1/view_s.html', {'form':form})
+
 def buscar_t(request):
     if request.method == 'POST':
         form = SearchForm(request.POST)
@@ -24,9 +53,9 @@ def buscar_t(request):
             year = form.cleaned_data['year']
             trim = form.cleaned_data['trimestre']
             if year is not None:
-                docs = Document.objects.all().filter(codigo=codigo,year=year,trimestre=trim)
+                docs = Document.objects.all().filter(codigo=codigo,year=year,trimestre=trim,guardar="TRAN").order_by('-year')
             else:
-                docs = Document.objects.all().filter(codigo=codigo)
+                docs = Document.objects.all().filter(codigo=codigo,guardar="TRAN").order_by('-year')
         return render(request, 'historia1/buscar_t.html', {'form': form, 'query': docs})
     else:
         form = SearchForm()
@@ -41,9 +70,9 @@ def buscar_p(request):
             year = form.cleaned_data['fecha_vigano']
             trim = form.cleaned_data['fecha_vigtrim']
             if year is not None:
-                docs = Programa.objects.all().filter(codigo=codigo, fecha_vigtrim=trim, fecha_vigano=year)
+                docs = Programa.objects.all().filter(codigo=codigo, fecha_vigtrim=trim, fecha_vigano=year).order_by('-fecha_vigano')
             else:
-                docs = Programa.objects.all().filter(codigo=codigo)
+                docs = Programa.objects.all().filter(codigo=codigo).order_by('-fecha_vigano')
         return render(request, 'historia1/buscar_p.html', {'form': form, 'query': docs})
     else:
         form = SearchFormProg()
@@ -64,23 +93,12 @@ def model_form_upload(request):
             filename, file_extension = os.path.splitext('documents/'+str(request.FILES['document']))
             if file_extension != ".pdf":
                 form1 = DocumentForm()
-                error = "UN ERROR HA OCURRIDO, ARCHIVO EN FORMATO ERRONEO"
+                error = "Error: El archivo debe tener formato .pdf"
                 return render(request,'historia1/model_form_upload.html',
                 {
                 'form' : form1,
                 'error': error
                 })
-            try: 
-                search = Document.objects.get(name=doc.name)
-                form1 = DocumentForm()
-                error = "ERROR. YA EXISTE UN ARCHIVO CON ESE NOMBRE"
-                return render(request,'historia1/model_form_upload.html',
-                {
-                'form' : form1,
-                'error': error
-                })
-            except Document.DoesNotExist:
-                pass
 
             doc.save()
             if scan:
@@ -90,11 +108,11 @@ def model_form_upload(request):
 
             doc.pdf_to_text = strng
             doc.save()
-            document = Document.objects.get(name=str(request.FILES['document']))
 
-            return redirect('mivista', document.id)
-    else:
+            return redirect('editar_t', doc.id)
+    else:        
         form = DocumentForm()
+
     return render(request,'historia1/model_form_upload.html', {
     'form' : form, 'error': error
     })
@@ -110,51 +128,15 @@ def editar_t(request, pk):
     doc = get_object_or_404(Document, pk=pk)
     url = doc.document.url
     strng = doc.pdf_to_text
+    campos = ['asignatura','codigo','creditos','year', 'trimestre','fecha',
+            'departamento','requisitos','justificacion','objetivos','contenidos',
+            'metodologias','evaluacion','bibliografias','horas_teoria','horas_lab',
+            'horas_practica','guardar']
 
-    form = SaveForm(request.POST or None, instance=doc)
-    if form.is_valid():
-        month = 1
-        if form.cleaned_data['trimestre'] == 'EM':
-            month = 1
-        elif form.cleaned_data['trimestre'] == 'AB':
-            month = 4
-        elif form.cleaned_data['trimestre'] == 'SD':
-            month = 9
+    if doc.guardar == 'PASA':
+        return redirect('index')
 
-        if form.cleaned_data['year'] is not None: 
-            fecha = date(form.cleaned_data['year'], month, 1)
-
-        temp = form.save(commit=False)
-        temp.fecha = fecha
-        temp.pdf_to_text = request.session['strng']
-        temp.codigo = form.cleaned_data['codigo'].upper()
-        temp.save()
-        return redirect('model_form_upload')
-    return render(request, 'historia1/editar.html', {'strng': strng, 'url': url, 'form_s': form})
-
-def mivista(request, pk):
-    ## TODO
-    # GUARDAR STRNG SI LO MODIFICO !!
-    doc = get_object_or_404(Document, pk=pk)
-    url = doc.document.url
-    strng = doc.pdf_to_text
     FormSet1 = formset_factory(AutForm)
-    data1 = {'form-TOTAL_FORMS': '1',
-            'form-INITIAL_FORMS': '0',
-            'form-MAX_NUM_FORMS': '',
-            'form-0-name':'',
-            'form-0-apellido':'',
-            }
-    data2 = {'form-TOTAL_FORMS': '1',
-            'form-INITIAL_FORMS': '0',
-            'form-MAX_NUM_FORMS': '',
-            'form-0-titulo':'',
-            'form-0-editorial':'',
-            'form-0-edicion':'',
-            'form-0-name':'',
-            'form-0-apellido':'',
-            }
-
     form_1=RefForm(request.POST or None)
     #LibroFormset = inlineformset_factory(Referencia,Autores,fields=['name','apellido',])
     form_2=FormSet1(request.POST or None)
@@ -166,10 +148,23 @@ def mivista(request, pk):
     form_8=FormSet1(request.POST or None)
     form_9=RefForm(request.POST or None)
     form_10=FormSet1(request.POST or None)
+
+    FormSet = formset_factory(ExtraFields, formset=BaseLinkFormSet)
+    requeridos = ['requisitos','objetivos','metodologias','evaluacion','justificacion']
+
+    y = {}
+    for x in campos:
+        y_x=doc.__getattribute__(x)
+        if y_x is not None and y_x != '':
+            y[x] = y_x
+
+
+    data = CamposExtra.objects.filter(document=doc)
+    initial_data = [{'nombre':d.nombre,'value':d.value} for d in data]
+
+    form_ = FormSet(request.POST or None, initial = initial_data)
     form = SaveForm(request.POST or None, instance=doc)
-    print(form_1.is_valid())
-    print(form_2.is_valid())
-    if form.is_valid() and form_1.is_valid() and form_2.is_valid():
+    if form.is_valid() and form_.is_valid() and form_1.is_valid() and form_2.is_valid():
         month = 1
         if form.cleaned_data['trimestre'] == 'EM':
             month = 1
@@ -178,53 +173,43 @@ def mivista(request, pk):
         elif form.cleaned_data['trimestre'] == 'SD':
             month = 9
 
+        temp = form.save(commit=False)
         if form.cleaned_data['year'] is not None: 
             fecha = date(form.cleaned_data['year'], month, 1)
+            temp.fecha = fecha
+
+        for d in data:
+            d.delete()
+            
+        for l in form_:
+            nombre = l.cleaned_data.get('nombre')
+            value = l.cleaned_data.get('value')
+            c = CamposExtra(nombre=nombre,value=value)
+            c.save()
+            c.document.add(doc)
+            c.save()
+
+        temp.codigo = form.cleaned_data['codigo'].upper()
+        temp.pdf_to_text = strng
+        temp.save()
+
+        # PARA PASA => VERIFICAR QUE CAMPOS OBLI NO VACIOS, OTRAS RESTRICCIONES
+        if form.cleaned_data['guardar'] == 'PASA':
+            return redirect('form_pasa', pk)
         else:
-            fecha = date(2017,month,1)
+            return redirect('/editar/'+pk+'?msg=saved')
 
-        #temp = form.save(commit=False)  
-        #temp.fecha = fecha
-        #temp.pdf_to_text = request.session['strng']
-        #temp.codigo = form.cleaned_data['codigo'].upper()
-        #temp.save()
-        print(form.is_valid()) 
-        #form_1.save()
-        print(request.POST.get('titulo',0))  
-        print("HOLA___")
+    return render(request, 'historia1/editar.html', {'strng': strng, 'url': url, 'form_s': form, 
+                                                    'requeridos':requeridos,'form_':form_,'act':y,'form_1': form_1,'form_2': form_2,'form_3': form_3,'form_4': form_4,'form_5': form_5,'form_6': form_6,'form_7': form_7,'form_8': form_8,'form_9': form_9,'form_10': form_10})
 
-        return redirect('model_form_upload')
-    #form_1.save()
-    print("HOLA")
-                
-    return render(request, 'historia1/editar.html', {'strng': strng, 'url': url, 'form_s': form,'form_1': form_1,'form_2': form_2,'form_3': form_3,'form_4': form_4,'form_5': form_5,'form_6': form_6,'form_7': form_7,'form_8': form_8,'form_9': form_9,'form_10': form_10})
-
-
-
-    # if request.method == 'POST':
-    #     form = SaveForm(request.POST, instance=doc)
-    #     if form.is_valid():
-    #         month = 1
-    #         if form.cleaned_data['trimestre'] == 'EM':
-    #             month = 1
-    #         elif form.cleaned_data['trimestre'] == 'AB':
-    #             month = 4
-    #         elif form.cleaned_data['trimestre'] == 'SD':
-    #             month = 9
-    #         fecha = date(form.cleaned_data['year'], month, 1)
-    #         temp = form.save(commit=False)
-    #         temp.fecha = fecha
-    #         temp.pdf_to_text = request.session['strng']
-    #         temp.codigo = form.cleaned_data['codigo'].upper()
-    #         temp.save()
-    #         return redirect('model_form_upload')
-    #     else:
-    #         strng = request.session['strng']
-    #         form_s = SaveForm(instance = doc)
-    #         return render(request,'historia1/editar.html', {'strng': strng, 'url': url, 'form_s': form})
-
-    # else:
-    #     strng = request.session['strng']
-    #     form_s = SaveForm()
-    #     return render(request,'historia1/editar.html', {'strng': strng, 'url': url, 'form_s': form_s})
-    
+def form_pasa(request, pk):
+    if request.method == 'POST':
+        doc = get_object_or_404(Document, pk=pk)
+        form = PASAForm(request.POST or None, instance=doc)
+        
+        if form.is_valid():
+            form.save()
+            return redirect('/?msg=pasa_saved')
+            
+        return render(request, 'historia1/pasa.html', {'form':form, 'pk':pk})
+    return redirect('/?msg=error')

@@ -4,6 +4,12 @@ from django.forms.formsets import BaseFormSet
 from django.forms import inlineformset_factory
 from django.forms.formsets import formset_factory
 
+
+class PASAForm(forms.ModelForm):
+    class Meta:
+        model = Document
+        fields = ['nombre', 'email', 'telefono']
+
 class DocumentForm(forms.ModelForm):
     class Meta:
         model = Document
@@ -18,12 +24,84 @@ class DocumentForm(forms.ModelForm):
 class SaveForm(forms.ModelForm):
     class Meta:
         model = Document
-        fields = ['asignatura','codigo','creditos','departamento','requisitos','objetivos','contenidos','metodologias','evaluacion','bibliografias','horas_teoria','horas_lab','horas_practica','year', 'trimestre']
+        fields = ['asignatura','codigo','creditos','year', 'trimestre','fecha','departamento','requisitos','justificacion','objetivos','contenidos','metodologias','evaluacion','bibliografias','horas_teoria','horas_lab','horas_practica','guardar']
+        
+        def __init__(self, *args, **kwargs):
+            super(SaveForm, self).__init__(*args, **kwargs)
 
     def clean(self):
         cleaned_data = super(SaveForm, self).clean()
         cod = cleaned_data.get("codigo")
-        # Revisar si suma de horas no da > 40
+        h_lab = cleaned_data.get("horas_lab")
+        h_teo = cleaned_data.get("horas_teoria")
+        h_prac = cleaned_data.get("horas_practica")
+        creds = cleaned_data.get("creditos")
+        year = cleaned_data.get("year")
+        trim = cleaned_data.get("trimestre")
+        pasa = cleaned_data.get("guardar")
+        asig = cleaned_data.get("asignatura")
+        fuentes = cleaned_data.get("bibliografias")
+        sinop = cleaned_data.get("contenidos")
+        print(cleaned_data)
+
+        if h_lab is not None and h_teo is not None and h_prac is not None:
+            if h_lab + h_teo + h_prac > 40:
+                raise forms.ValidationError("Error: Suma de horas es mayor a 40")
+        elif h_lab is not None and h_teo is not None:
+            if h_lab + h_teo > 40:
+                raise forms.ValidationError("Error: Suma de horas es mayor a 40")
+        elif h_lab is not None and h_prac is not None:
+            if h_lab + h_teo > 40:
+                raise forms.ValidationError("Error: Suma de horas es mayor a 40")
+        elif h_prac is not None and h_teo is not None:
+            if h_prac + h_teo > 40:
+                raise forms.ValidationError("Error: Suma de horas es mayor a 40")
+        elif h_prac is not None:
+            if h_prac > 40:
+                raise forms.ValidationError("Error: Suma de horas es mayor a 40")
+        elif h_teo is not None:
+            if h_teo > 40:
+                raise forms.ValidationError("Error: Suma de horas es mayor a 40")
+        elif h_lab is not None:
+            if h_lab > 40:
+                raise forms.ValidationError("Error: Suma de horas es mayor a 40")
+
+        if creds is not None:
+            if (creds < 0) or (creds > 16):
+                raise forms.ValidationError("Error: Valor de créditos fuera de rango")
+        
+        if (year is not None) and (year > 2017 or year < 1969):
+            raise forms.ValidationError("Error: Valor del año inválido")
+
+        # Validar que no exista un programa con mismo cod y per
+        if (year is not None) and (trim != "NN"):
+            progs = Programa.objects.all().filter(codigo=cod, fecha_vigtrim=trim, fecha_vigano=year)
+            if progs.exists():
+                raise forms.ValidationError("Error: Ya existe un programa en SIGPAE con el mismo código y período")
+
+        print(cleaned_data)
+        # Verificar que campos obligatorios no esten vacios
+        if pasa == "PASA":
+            if cod == '':
+                raise forms.ValidationError("Error: Para guardar como P.A.S.A. debe tener código")
+            if asig == '':
+                raise forms.ValidationError("Error: Para guardar como P.A.S.A. debe tener denominación")
+            #fecha/perido
+            if year is None:
+                raise forms.ValidationError("Error: Para guardar como P.A.S.A. debe tener fecha")
+            if trim == 'NN':
+                raise forms.ValidationError("Error: Para guardar como P.A.S.A. debe tener fecha")
+            #horas teo, lab, prac
+            if h_lab is None:
+                raise forms.ValidationError("Error: Para guardar como P.A.S.A. debe tener horas de laboratorio")
+            if h_teo is None:
+                raise forms.ValidationError("Error: Para guardar como P.A.S.A. debe tener horas de teoría")
+            if h_prac is None:
+                raise forms.ValidationError("Error: Para guardar como P.A.S.A. debe tener horas de práctica")
+            if sinop == '':
+                raise forms.ValidationError("Error: Para guardar como P.A.S.A. debe tener contenidos sinópticos")
+            if fuentes == '':
+                raise forms.ValidationError("Error: Para guardar como P.A.S.A. debe tener fuentes")
 
 class SearchForm(forms.ModelForm):
     class Meta:
@@ -86,7 +164,6 @@ class ViewProgForm(forms.ModelForm):
         self.fields['fuentes'].disabled = True
         self.fields['cronograma'].disabled = True
 
-
 class RefForm(forms.ModelForm):
     class Meta:
         model = Referencia
@@ -114,12 +191,60 @@ class AutForm(forms.ModelForm):
             self.fields['name'].label = "Nombre Autor"
             self.fields['apellido'].label = "Apellido Autor"
 
-class BaseLinkFormSet(BaseFormSet):
+class BaseLinkFormSetR(BaseFormSet):
     def add_fields(self, form, index):
-        super(BaseLinkFormSet, self).add_fields(form, index)
+        super(BaseLinkFormSetR, self).add_fields(form, index)
         form.fields['Nombre Autor']= forms.CharField()
         form.fields['Apellido Autor']= forms.CharField()
 
+class ViewPASAForm(forms.ModelForm):
+    class Meta:
+        model = Document
+        fields = ['nombre', 'email','telefono', 'asignatura','codigo','creditos','year', 'trimestre','departamento','requisitos','objetivos','contenidos','metodologias','evaluacion','bibliografias','horas_teoria','horas_lab','horas_practica']
 
+    def __init__(self, *args, **kwargs):
+        super(ViewPASAForm, self).__init__(*args, **kwargs)
+        self.fields['nombre'].disabled = True
+        self.fields['email'].disabled = True
+        self.fields['telefono'].disabled = True
+        self.fields['asignatura'].disabled = True
+        self.fields['codigo'].disabled = True
+        self.fields['creditos'].disabled = True
+        self.fields['year'].disabled = True
+        self.fields['trimestre'].disabled = True
+        self.fields['departamento'].disabled = True
+        self.fields['requisitos'].disabled = True
+        self.fields['objetivos'].disabled = True
+        self.fields['metodologias'].disabled = True
+        self.fields['evaluacion'].disabled = True
+        self.fields['bibliografias'].disabled = True
+        self.fields['horas_teoria'].disabled = True
+        self.fields['horas_lab'].disabled = True
+        self.fields['horas_practica'].disabled = True
 
+class ExtraFields(forms.ModelForm):
+
+    class Meta:
+        model = CamposExtra
+        fields = ['nombre','value']
+
+        def __init__(self, *args, **kwargs):
+            super(ExtraFields, self).__init__(*args, **kwargs)
+            self.fields['nombre'].required = True
+            self.fields['value'].required = True
+            self.fields['nombre'].label = "Nombre:"
+            self.fields['value'].label = "Texto:"
+
+class BaseLinkFormSet(BaseFormSet):
+    def clean(self):
+        """Checks that no two articles have the same title."""
+        if any(self.errors):
+            # Don't bother validating the formset unless each form is valid on its own
+            return
+        titles = []
+        for form in self.forms:
+            title = form.cleaned_data['nombre']
+            if title in titles:
+                raise forms.ValidationError("Los campos deben tener nombres distintos")
+            titles.append(title)
 
