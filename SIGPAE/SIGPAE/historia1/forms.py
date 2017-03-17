@@ -13,7 +13,7 @@ class PASAForm(forms.ModelForm):
 class DocumentForm(forms.ModelForm):
     class Meta:
         model = Document
-        fields = ('description', 'document', 'scanned', )
+        fields = ('document', 'scanned', )
 
         def __init__(self, *args, **kwargs):
             super(DocumentForm, self).__init__(*args, **kwargs)

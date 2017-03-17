@@ -112,6 +112,47 @@
         </div>
       {% endfor %}
 
+      <script>
+        $('.formset').formset({
+              addText: 'add link',
+              deleteText: 'remove'
+          });
+        $('#agregar').on('click',function(){
+          $("#tipoCampo").show();
+        });
+        var delete_click = $('.delete-row').last();
+        delete_click.click();
+        $('.add-row').hide();
+        $('.delete-row').hide();
+        $('#nuevoCampo').on('click',function(){
+          x = $('select').val();
+          console.log(x);
+          switch (x) {
+            case '1':
+              $('.form-group:contains(Requisitos:)').show();
+              break;
+            case '2':
+              $('.form-group:contains(Objetivos:)').show();
+              break;
+            case '3':
+              $('.form-group:contains(Estrategias Metodológicas:)').show();
+              break;
+            case '4':
+              $('.form-group:contains(Estrategias de Evaluación:)').show();
+              break;
+            case '5':
+              $('.form-group:contains(Justificación:)').show()
+              break;
+            default:
+              $('.add-row').click();
+              break;
+          }
+        $('#select').prop('selectedIndex',0);
+        $("#tipoCampo").hide();
+        $('.delete-row').hide();
+        });
+      </script>
+
       <div id="0">
       {% for field in form_1 %}
       <div class="formset" id="{{field.auto_id}}">
@@ -270,8 +311,6 @@
     </div>
   </div>
 </div>
-
-
 <script>
   $('.formset_').formset({
         addText: 'agregar autor',
@@ -307,51 +346,6 @@
     $(y).show();
     i += 1
   });
-
 </script>
 
-<script>
-
-  $('.formset').formset({
-        addText: 'add link',
-        deleteText: 'remove'
-    });
-
-  $('#agregar').on('click',function(){
-    $("#tipoCampo").show();
-  });
-
-  var delete_click = $('.delete-row').last();
-  delete_click.click();
-  $('.add-row').hide();
-  $('.delete-row').hide();
-
-  $('#nuevoCampo').on('click',function(){
-    x = $('select').val();
-    console.log(x);
-    switch (x) {
-      case '1':
-        $('.form-group:contains(Requisitos:)').show();
-        break;
-      case '2':
-        $('.form-group:contains(Objetivos:)').show();
-        break;
-      case '3':
-        $('.form-group:contains(Estrategias Metodológicas:)').show();
-        break;
-      case '4':
-        $('.form-group:contains(Estrategias de Evaluación:)').show();
-        break;
-      case '5':
-        $('.form-group:contains(Justificación:)').show()
-        break;
-      default:
-        $('.add-row').click();
-        break;
-    }
-  $('#select').prop('selectedIndex',0);
-  $("#tipoCampo").hide();
-  $('.delete-row').hide();
-  });
-</script>
 {% endblock %}

@@ -42,7 +42,6 @@ class Programa(models.Model):
 class Document(models.Model):
 
     name = models.CharField(max_length=255)
-    description = models.CharField('Descripción',max_length=255, blank=True)
     document = models.FileField('Documento A Subir',upload_to='documents')
     uploaded_at = models.DateTimeField(auto_now_add=True)
     asignatura= models.CharField('Denominación', max_length=255,blank=True)
@@ -245,7 +244,7 @@ class Referencia(models.Model):
       document = models.ManyToManyField(Document, blank=False)
 
 class Autores(models.Model):
-      name = models.CharField(max_length=255,blank=True)
+      name = models.CharField('Nombre',max_length=255,blank=True)
       apellido = models.CharField(max_length=255,blank=True)
       referencia = models.ForeignKey(Referencia, blank=False)
 
