@@ -1,6 +1,9 @@
 from django import forms
-from django.forms.formsets import BaseFormSet
 from .models import *
+from django.forms.formsets import BaseFormSet
+from django.forms import inlineformset_factory
+from django.forms.formsets import formset_factory
+
 
 class PASAForm(forms.ModelForm):
     class Meta:
@@ -19,14 +22,12 @@ class DocumentForm(forms.ModelForm):
             self.fields['scanned'].label = "Utilizar Reconocimiento de Caracteres:"
 
 class SaveForm(forms.ModelForm):
-
     class Meta:
         model = Document
         fields = ['asignatura','codigo','creditos','year', 'trimestre','fecha','departamento','requisitos','justificacion','objetivos','contenidos','metodologias','evaluacion','bibliografias','horas_teoria','horas_lab','horas_practica','guardar']
         
         def __init__(self, *args, **kwargs):
             super(SaveForm, self).__init__(*args, **kwargs)
-        
 
     def clean(self):
         cleaned_data = super(SaveForm, self).clean()
@@ -102,7 +103,6 @@ class SaveForm(forms.ModelForm):
             if fuentes == '':
                 raise forms.ValidationError("Error: Para guardar como P.A.S.A. debe tener fuentes")
 
-
 class SearchForm(forms.ModelForm):
     class Meta:
         model = Document
@@ -164,6 +164,39 @@ class ViewProgForm(forms.ModelForm):
         self.fields['fuentes'].disabled = True
         self.fields['cronograma'].disabled = True
 
+class RefForm(forms.ModelForm):
+    class Meta:
+        model = Referencia
+        fields = ['titulo','editorial','edicion']
+
+        def __init__(self, *args, **kwargs):
+            super(RefForm, self).__init__(*args, **kwargs)
+            self.fields['titulo'].required = True
+            self.fields['editorial'].required = True
+            self.fields['edicion'].required = True
+            self.fields['titulo'].label = "Titulo del libro"
+            self.fields['editorial'].label = "Editorial del libro"
+            self.fields['edicion'].label = "Edicion y/o año de vigencia"
+
+
+class AutForm(forms.ModelForm):
+    class Meta:
+        model = Autores
+        fields = ['name','apellido']
+
+        def __init__(self, *args, **kwargs):
+            super(AutForm, self).__init__(*args, **kwargs)
+            self.fields['name'].required = True
+            self.fields['apellido'].required = True
+            self.fields['name'].label = "Nombre Autor"
+            self.fields['apellido'].label = "Apellido Autor"
+
+class BaseLinkFormSetR(BaseFormSet):
+    def add_fields(self, form, index):
+        super(BaseLinkFormSetR, self).add_fields(form, index)
+        form.fields['Nombre Autor']= forms.CharField()
+        form.fields['Apellido Autor']= forms.CharField()
+
 class ViewPASAForm(forms.ModelForm):
     class Meta:
         model = Document
@@ -214,3 +247,4 @@ class BaseLinkFormSet(BaseFormSet):
             if title in titles:
                 raise forms.ValidationError("Los campos deben tener nombres distintos")
             titles.append(title)
+

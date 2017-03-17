@@ -1,12 +1,14 @@
-from .forms import *
-from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
+from .forms import *
 from .models import *
+from django.forms.formsets import formset_factory
+from django.forms import inlineformset_factory
 from readpdf import *
 from datetime import *
+from django.contrib import messages
 from django import forms
-from django.forms.formsets import formset_factory
 from django.db import IntegrityError, transaction
+
 import os
 # Create your views here.
 from django.http import HttpResponse, HttpResponseRedirect
@@ -134,6 +136,19 @@ def editar_t(request, pk):
     if doc.guardar == 'PASA':
         return redirect('index')
 
+    FormSet1 = formset_factory(AutForm)
+    form_1=RefForm(request.POST or None)
+    #LibroFormset = inlineformset_factory(Referencia,Autores,fields=['name','apellido',])
+    form_2=FormSet1(request.POST or None)
+    form_3=RefForm(request.POST or None)
+    form_4=FormSet1(request.POST or None)
+    form_5=RefForm(request.POST or None)
+    form_6=FormSet1(request.POST or None)
+    form_7=RefForm(request.POST or None)
+    form_8=FormSet1(request.POST or None)
+    form_9=RefForm(request.POST or None)
+    form_10=FormSet1(request.POST or None)
+
     FormSet = formset_factory(ExtraFields, formset=BaseLinkFormSet)
     requeridos = ['requisitos','objetivos','metodologias','evaluacion','justificacion']
 
@@ -149,7 +164,7 @@ def editar_t(request, pk):
 
     form_ = FormSet(request.POST or None, initial = initial_data)
     form = SaveForm(request.POST or None, instance=doc)
-    if form.is_valid() and form_.is_valid():
+    if form.is_valid() and form_.is_valid() and form_1.is_valid() and form_2.is_valid():
         month = 1
         if form.cleaned_data['trimestre'] == 'EM':
             month = 1
@@ -184,10 +199,8 @@ def editar_t(request, pk):
         else:
             return redirect('/editar/'+pk+'?msg=saved')
 
-
-
     return render(request, 'historia1/editar.html', {'strng': strng, 'url': url, 'form_s': form, 
-                                                    'requeridos':requeridos,'form_':form_,'act':y})
+                                                    'requeridos':requeridos,'form_':form_,'act':y,'form_1': form_1,'form_2': form_2,'form_3': form_3,'form_4': form_4,'form_5': form_5,'form_6': form_6,'form_7': form_7,'form_8': form_8,'form_9': form_9,'form_10': form_10})
 
 def form_pasa(request, pk):
     if request.method == 'POST':
@@ -200,4 +213,3 @@ def form_pasa(request, pk):
             
         return render(request, 'historia1/pasa.html', {'form':form, 'pk':pk})
     return redirect('/?msg=error')
-

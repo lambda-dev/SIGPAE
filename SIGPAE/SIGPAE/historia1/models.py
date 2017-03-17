@@ -238,6 +238,17 @@ class Document(models.Model):
     def get_absolute_url(self):
       return reverse('editar_t', kwargs={'pk': self.pk})
 
+class Referencia(models.Model):
+      titulo = models.CharField(max_length=255,blank=True)
+      editorial= models.CharField(max_length=255,blank=True)
+      edicion = models.CharField(max_length=255,blank=True)
+      document = models.ManyToManyField(Document, blank=False)
+
+class Autores(models.Model):
+      name = models.CharField(max_length=255,blank=True)
+      apellido = models.CharField(max_length=255,blank=True)
+      referencia = models.ForeignKey(Referencia, blank=False)
+
 class CamposExtra(models.Model):
     nombre = models.CharField('Nombre', max_length=255, blank=False)
     value = models.TextField('Texto', blank=False)
