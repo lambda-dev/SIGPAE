@@ -146,11 +146,12 @@ class SearchFormProg(forms.ModelForm):
 class ViewProgForm(forms.ModelForm):
     class Meta:
         model = Programa
-        fields = ['codigo','materia','h_teoria','h_prac','h_lab','fecha_vigano','fecha_vigtrim','obj_g','obj_e','contenidos', 'estrategias', 'estrat_eval', 'fuentes', 'cronograma', 'sinoptico']
+        fields = ['codigo','materia','creditos','h_teoria','h_prac','h_lab','fecha_vigano','fecha_vigtrim','obj_g','obj_e','contenidos', 'estrategias', 'estrat_eval', 'fuentes', 'cronograma', 'sinoptico']
 
     def __init__(self, *args, **kwargs):
         super(ViewProgForm, self).__init__(*args, **kwargs)
         self.fields['codigo'].disabled = True
+        self.fields['creditos'].disabled = True
         self.fields['materia'].disabled = True
         self.fields['h_teoria'].disabled = True
         self.fields['h_prac'].disabled = True
@@ -223,7 +224,6 @@ class ViewPASAForm(forms.ModelForm):
         self.fields['horas_practica'].disabled = True
 
 class ExtraFields(forms.ModelForm):
-
     class Meta:
         model = CamposExtra
         fields = ['nombre','value']
@@ -243,8 +243,9 @@ class BaseLinkFormSet(BaseFormSet):
             return
         titles = []
         for form in self.forms:
-            title = form.cleaned_data['nombre']
-            if title in titles:
-                raise forms.ValidationError("Los campos deben tener nombres distintos")
-            titles.append(title)
+            if 'nombre' in form.cleaned_data:
+                title = form.cleaned_data['nombre']
+                if title in titles:
+                    raise forms.ValidationError("Los campos deben tener nombres distintos")
+                titles.append(title)
 

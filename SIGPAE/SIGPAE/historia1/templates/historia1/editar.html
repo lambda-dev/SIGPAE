@@ -29,10 +29,10 @@
 
     <div class="col-md-3">
     <div class="addFields">
-      <button id="agregar" class="btn btn-primary col-md-12" type="button">Agregar Campo</button>
+      <button style="margin-bottom: 10px;" id="agregar" class="btn btn-primary col-md-12 form-control" type="button">Agregar Campo</button>
 
       <div id="tipoCampo" hidden>
-        <select id="select">
+        <select id="select" class="form-control">
 
           <option selected disabled hidden value="">Seleccione Un Tipo de Campo a Agregar</option>
 
@@ -49,9 +49,16 @@
           </optgroup>
 
         </select>
-        <button id="nuevoCampo" class="btn btn-primary">Agregar</button>
+        <button style="margin-bottom: 20px;margin-top: 10px;" id="nuevoCampo" class="btn btn-primary form-control">Agregar</button>
       </div>
     </div>
+
+    <div style="margin-top:10px;">
+    <button id="extraer" type="button" class="btn btn-primary form-control">Extraer</button>
+      <select style="margin-top:10px;margin-bottom: 10px;" class="form-control">
+        <option id="opcionE"  value="0" label="Código y departamento"></option>
+      </select>
+      </div>
 
     <form method="post" enctype="multipart/form-data">
       {% if form_s.non_field_errors %}
@@ -305,6 +312,57 @@
       if (Number($('#id_year').find('input').val())>2017){
           alert("El año de entrada en vigencia no puede mayor al año actual.");
       }
+    });
+    $(document).ready(function() {
+      var r = $('<button type="button" class="btn btn-primary" id="cambiar">Cambiar Formato Fecha</button>');
+        r.insertBefore( "#id_year" );
+      $('#id_fecha').hide();
+      $('i[name=test]').hide();
+       $("#cambiar").click(function(){   
+      $('#id_fecha').toggle();
+      $('i[name=test]').toggle();
+      $('#id_trimestre').toggle();
+      $('#id_year').toggle();
+       }); 
+        $("#extraer").click(function(){
+        if($("#opcionE" ).val()==0){
+        
+          if('{{codigo}}'!="NULL"){ 
+        
+            $('#id_codigo').find('input').val('{{codigo}}');
+            var str = '{{codigo}}';
+            var res = str.substring(0, 2);
+            if(res=='EP' || res=='ET' || res=='PG' || res=='PD' || res=='TG' || res=='TEG' || res=='USB' ){  
+              alert("Codigo encontrado:{{codigo}}  \nNo es un departamento, pero son siglas validas asociadas:{{departamento}}");
+              //61 es para ninguno
+              $("#id_departamento select").val(61);     
+            }
+            else{  
+              var existeDep=false;
+              $("#id_departamento option").each(function()
+              {
+                  if('{{departamento}}'==$(this).text()){
+                    $("#id_departamento select").val($(this).val());
+                    existeDep=true;
+                  }
+              });
+              
+              if(existeDep){
+                alert("Codigo encontrado:{{codigo}}  \nDepartamento encontrado:{{departamento}}"); 
+              }else{
+                alert("Codigo encontrado:{{codigo}}  \nDepartamento No encontrado en los ya existentes:{{departamento}}"); 
+              
+              
+              }
+            }
+           }
+           else{alert("No se ha encontrado algún código,por favor insertarlo manualmente");  }
+          
+        } 
+          
+
+      
+        }); 
     });
 </script>
     </form>

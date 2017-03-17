@@ -8,6 +8,7 @@ from datetime import *
 from django.contrib import messages
 from django import forms
 from django.db import IntegrityError, transaction
+from extraercodigo import  * 
 
 import os
 # Create your views here.
@@ -128,6 +129,10 @@ def editar_t(request, pk):
     doc = get_object_or_404(Document, pk=pk)
     url = doc.document.url
     strng = doc.pdf_to_text
+
+    codigo = extraerCodigo(strng)
+    departamento = extraerDepartamento(codigo)
+
     campos = ['asignatura','codigo','creditos','year', 'trimestre','fecha',
             'departamento','requisitos','justificacion','objetivos','contenidos',
             'metodologias','evaluacion','bibliografias','horas_teoria','horas_lab',
@@ -162,21 +167,26 @@ def editar_t(request, pk):
     data = CamposExtra.objects.filter(document=doc)
     initial_data = [{'nombre':d.nombre,'value':d.value} for d in data]
 
-    form_ = FormSet(request.POST or None, initial = initial_data)
+    if request.method == 'POST':
+        form_ = FormSet(request.POST)
+    else:
+        form_ = FormSet(initial = initial_data)
+
     form = SaveForm(request.POST or None, instance=doc)
     if form.is_valid() and form_.is_valid() and form_1.is_valid() and form_2.is_valid():
-        month = 1
-        if form.cleaned_data['trimestre'] == 'EM':
-            month = 1
-        elif form.cleaned_data['trimestre'] == 'AB':
-            month = 4
-        elif form.cleaned_data['trimestre'] == 'SD':
-            month = 9
-
         temp = form.save(commit=False)
-        if form.cleaned_data['year'] is not None: 
-            fecha = date(form.cleaned_data['year'], month, 1)
-            temp.fecha = fecha
+        if form.cleaned_data['fecha'] is not None:
+            month = 1
+            if form.cleaned_data['trimestre'] == 'EM':
+                month = 1
+            elif form.cleaned_data['trimestre'] == 'AB':
+                month = 4
+            elif form.cleaned_data['trimestre'] == 'SD':
+                month = 9
+
+            if form.cleaned_data['year'] is not None: 
+                fecha = date(form.cleaned_data['year'], month, 1)
+                temp.fecha = fecha
 
         for d in data:
             d.delete()
@@ -197,9 +207,9 @@ def editar_t(request, pk):
         if form.cleaned_data['guardar'] == 'PASA':
             return redirect('form_pasa', pk)
         else:
-            return redirect('/editar/'+pk+'?msg=saved')
+            return redirect('/editar/'+pk+'')
 
-    return render(request, 'historia1/editar.html', {'strng': strng, 'url': url, 'form_s': form, 
+    return render(request, 'historia1/editar.html', {'departamento': departamento, 'codigo': codigo,'strng': strng, 'url': url, 'form_s': form, 
                                                     'requeridos':requeridos,'form_':form_,'act':y,'form_1': form_1,'form_2': form_2,'form_3': form_3,'form_4': form_4,'form_5': form_5,'form_6': form_6,'form_7': form_7,'form_8': form_8,'form_9': form_9,'form_10': form_10})
 
 def form_pasa(request, pk):

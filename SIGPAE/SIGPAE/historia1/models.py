@@ -12,6 +12,7 @@ class Programa(models.Model):
 
   codigo = models.CharField('Código de la materia', max_length=10,blank=True)
   materia = models.CharField('Denominación', max_length=255,blank=True)
+  creditos = models.PositiveIntegerField('Unidades Créditos',blank=True, null=True, validators=[MaxValueValidator(16), MinValueValidator(0)])
   h_teoria = models.PositiveIntegerField('Horas de Teoría',blank=True,null=True)
   h_prac = models.PositiveIntegerField('Horas de Práctica',blank=True,null=True)
   h_lab =models.PositiveIntegerField('Horas de Laboratorio',blank=True,null=True)
@@ -40,7 +41,6 @@ class Programa(models.Model):
 
 # Create your models here.
 class Document(models.Model):
-
     name = models.CharField(max_length=255)
     document = models.FileField('Documento A Subir',upload_to='documents')
     uploaded_at = models.DateTimeField(auto_now_add=True)
@@ -93,6 +93,7 @@ class Document(models.Model):
         default=NN,
     )
 
+    ZZ = 'NN'
     CFM = 'Ciencias Físicas y Matemáticas'
     CSH = 'Ciencias Sociales y Humanidades'
     CB = 'Ciencias Biológicas'
@@ -223,12 +224,13 @@ class Document(models.Model):
                (CEU, 'Coordinación de Estudios Urbanos'),
                (CTH, 'Coordinación de Turismo, Hotelería y Hospitalidad'),
                (CCE, 'Coordinación de Comercio Exterior y Licenciatura en Comercio Internacional'),) ),
+        (ZZ, 'Ninguno'),
     )
 
     departamento = models.CharField(
         max_length=2,
         choices=DEPARTAMENTOS,
-        default=DCT,
+        default=ZZ,
     )
 
     def __str__(self):
