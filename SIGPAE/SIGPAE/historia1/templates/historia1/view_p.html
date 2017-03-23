@@ -1,0 +1,40 @@
+{% extends 'historia1/base.html' %}
+{% load static %}
+
+{% block content %}
+<script>
+tinymce.init({
+  selector: 'textarea',
+  height: 200,
+  width: 400,
+  menubar: false,
+  plugins: [
+    'advlist autolink lists link image charmap print preview anchor',
+    'searchreplace visualblocks code fullscreen',
+    'table paste code'
+  ],
+  toolbar: 'undo redo ',
+  content_css: '//www.tinymce.com/css/codepen.min.css'
+});
+</script>
+<div class="row">
+<center><h1>CONSULTAR PROGRAMA</h1></center>
+  <div class="col-md-4"></div>
+  <div class="col-md-4">
+    <div class="panel">
+      <div class="panel-body">
+          {% for field in form %}
+          <div class="form-group" id="{{field.auto_id}}">
+            {{ field.label_tag }} {{ field }}
+          </div>
+          {% endfor %}
+        
+
+        <a style="margin-top: 10px;" href="/consultar/p" role="button" class="btn btn-primary">Regresar</a>
+
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+{% endblock %}
