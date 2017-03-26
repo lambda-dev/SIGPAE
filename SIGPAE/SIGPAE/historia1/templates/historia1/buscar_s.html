@@ -1,49 +1,56 @@
 {% extends 'historia1/base.html' %}
 {% load static %}
-
 {% block content %}
-<div class="row">
-    <center><h1>BUSCAR DOCUMENTOS P.A.S.A.</h1></center>
-  <div class="col-md-4">
-  </div>
-  <div class="col-md-4">
-    <div class="panel">
-      <div class="panel-body">
-                <form method="post" enctype="multipart/form-data">
-                {% csrf_token %}
-                {% if form.non_field_errors %}
-                  {% for error in form.non_field_errors %}
-                    <div class="alert alert-danger">{{error}}</div>
-                  {% endfor %}
-                {% endif %}
-                  {% for field in form %}
-                  <div class="form-group" id="{{field.auto_id}}">
-                    {% if field.errors %}
-                      {% for error in field.errors %}
-                        <div class="alert alert-danger" role="alert">{{ error }}</div>
-                      {% endfor %}
-                    {% endif %}
-                    {{ field.label_tag }} {{ field }}
-                  </div>
-                  {% endfor %}
-                    <button class="btn btn-primary btn-lg btn-block" type="submit">Buscar</button>
-                </form>
-                
-                <a style="margin-top: 10px;" href="/consultar" role="button" class="btn btn-primary">Regresar</a>
+<div style="text-align:center" class="page-header container">
+    <img class="img-responsive center-block" src="{% static "images/usb.png" %}" width="5%" height="auto">
+    <h2>SIGPAE-Históricos</h2>
+    <h3><small>Sistema de Gestión de Programas Analíticos de Estudio</small></h3>
+</div>
+<div class="container">
+  <div class="row">
+    <div class="col-md-4 col-md-offset-2">
+      <div class="panel panel-default">
+        <div class="panel-heading" style="text-align:center">
+          <h2 class="panel-title">Buscar Programa Por Aprobar</h2>
+        </div>
+        <div class="panel-body">
+                  <form method="post" enctype="multipart/form-data">
+                  {% csrf_token %}
+                  {% if form.non_field_errors %}
+                    {% for error in form.non_field_errors %}
+                      <div class="alert alert-danger">{{error}}</div>
+                    {% endfor %}
+                  {% endif %}
+                    {% for field in form %}
+                    <div class="form-group" id="{{field.auto_id}}">
+                      {% if field.errors %}
+                        {% for error in field.errors %}
+                          <div class="alert alert-danger" role="alert">{{ error }}</div>
+                        {% endfor %}
+                      {% endif %}
+                      {{ field.label_tag }} {{ field }}
+                    </div>
+                    {% endfor %}
+                      <button class="btn btn-primary btn-lg btn-block" type="submit">Buscar</button>
+                  </form>
+                  
+                  <a style="margin-top: 10px;" href="../" role="button" class="btn btn-primary">Regresar</a>
+        </div>
       </div>
     </div>
-  </div>
-</div>
-<div class ="row">
-  <div class="col-md-4">
-  </div>
-    <div class="col-md-4">
+
+    <div class="col-md-5">
+      <div class="panel panel-default">
+        <div class="panel-heading" style="text-align:center">
+          <h2 class="panel-title">Resultados</h2>
+        </div>
+        <div class="panel-body">
     {% if query %}
     <table class="table table-striped table-hover">
     <thead>
-      <tr><th>CÓDIGO</th>
-      <th>AÑO</th>
-      <th>TRIMESTRE</th>
+      <tr><th style="text-align: center;">CÓDIGO</th>
+      <th style="text-align: center;">AÑO</th>
+      <th style="text-align: center;">TRIMESTRE</th>
       <th></th>
       </tr>
       </thead>
@@ -51,8 +58,8 @@
       {% for item in query%}
       <tr>
       <td>{{item.codigo}}</td>
-      <td>{{item.year}}</td>
-      <td>{{item.trimestre}}</td>
+      <td>{{item.fecha_vigano}}</td>
+      <td>{{item.fecha_vigtrim}}</td>
       <td><a href="{% url "view_s" item.id %}" role="button" class="btn btn-primary"">Ver</a></td>
       </tr>
       {% endfor %}
@@ -62,5 +69,8 @@
       <div class="alert alert-danger">No se encontraron resultados. Intente de nuevo</div>
     {% endif %}
   </div>
+</div>
+</div>
+</div>
 </div>
 {% endblock %}

@@ -1,9 +1,155 @@
+# -*- coding: utf-8 -*-
 from django import forms
 from .models import *
 from django.forms.formsets import BaseFormSet
 from django.forms import inlineformset_factory
 from django.forms.formsets import formset_factory
 
+class ReportForm(forms.Form):
+    CFM = 'Ciencias Físicas y Matemáticas'
+    CSH = 'Ciencias Sociales y Humanidades'
+    CB = 'Ciencias Biológicas'
+    CTAI = 'Ciencias y Tecnologías Administrativas e Industriales'
+    DEG ='Decanato de Estudios Generales'
+    DET='Decanato de Estudios Tecnológicos'
+    DEP='Decanato de Estudios de Postgrado'
+    DEPR='Decanato de Estudios Profesionales'
+    DF = '1'
+    DQ = '2'
+    DM = '3'
+    DMP= '4'
+    DCTI= '5'
+    DCCE= '6'
+    DEC= '7'
+    DTFT='8'
+    DCTE='9'
+    DPS='10'
+    DCM='11'
+    DCT='12'
+    DCTC='13'
+    DLL='14'
+    DCEA='15'
+    DI='16'
+    DFI='17'
+    DCS='18'
+    DDAAP='19'
+    DPU='20'
+    DBC='21'
+    DEA='22'
+    DBO='23'
+    DTPBB='24'
+    DTS='25'
+    DTI='26'
+    DFGCB='27'
+    CCB='28'
+    CCP='29'
+    CFG='30'
+    CCIU='31'
+    CTIE='32'
+    CTEE='33'
+    CIPOE='34'
+    CTHH='35'
+    CAA='36'
+    CCELCI='37'
+    CATOE='38'
+    CTMMA='39'
+    CBA='40'
+    CSHU='41'
+    IT='42'
+    CQ='43'
+    CM='44'
+    CBI='45'
+    CF='46'
+    CTIE='47'
+    CTIEL='48'
+    CIM='49'
+    CIQ='50'
+    CIC='51'
+    CIG='52'
+    CIMA='53'
+    CIPOE='54'
+    CTMMAIM='55'
+    CIT='56'
+    CA='57'
+    CEU='58'
+    CTH='59'
+    CCE='60'
+
+    DEPARTAMENTOS = (
+        (CFM, ((DF, 'Departamento de Física'),
+               (DQ, 'Departamento de Química'),
+               (DM, 'Departamento de Mecánica'),
+               (DMP, 'Departamento de Matemáticas Puras y Aplicadas'),
+               (DCTI, 'Departamento de Computación y Tecnología de la Información'),
+               (DCCE, 'Departamento de Cómputo Científico y Estadística'),
+               (DEC, 'Departamento de Electrónica y Circuitos'),
+               (DTFT, 'Departamento de Termodinámica y Fenómenos de Transferencia'),
+               (DCTE, 'Departamento de Conversión y Transporte de Energía'),
+               (DPS, 'Departamento de Procesos y Sistemas'),
+               (DCM, 'Departamento de Ciencias de los Materiales'),
+               (DCT, 'Departamento de Ciencias de la Tierra'),) ),
+        (CSH, ((DCTC, 'Departamento de Ciencia y Tecnología del Comportamiento'),
+               (DLL, 'Departamento de Lengua y Literatura'),
+               (DCEA, 'Departamento de Ciencias Económicas y Administrativas'),
+               (DI, 'Departamento de Idiomas'),
+               (DFI, 'Departamento de Filosofía'),
+               (DCS, 'Departamento de Ciencias Sociales'),
+               (DDAAP, 'Departamento de Diseño Arquitectura y Artes Plásticas'),
+               (DPU, 'Departamento de Planificación Urbana'),) ),
+        (CB,  ((DBC, 'Departamento de Biología Celular'),
+               (DEA, 'Departamento de Estudios Ambientales'),
+               (DBO, 'Departamento de Biología de Organismos'),
+               (DTPBB, 'Departamento de Tecnología de Procesos Biológicos y Bioquímicos'),) ),
+        (CTAI,((DTS, 'Departamento de Tecnología de Servicios'),
+               (DTI, 'Departamento de Tecnología Industrial'),
+               (DFGCB, 'Departamento de Formación General y Ciencias Básicas'),) ),
+        (DEG, ((CCB, 'Coordinación del Ciclo Básico'),
+               (CCP, 'Coordinación del Ciclo Profesional'),
+               (CFG, 'Coordinación de Formación General'),
+               (CCIU, 'Coordinación del Ciclo de Iniciación Universitaria'),) ),
+        (DET, ((CTIE, 'Coordinación de Tecnología e Ingeniería Eléctrica'),
+               (CTEE, 'Coordinación de Tecnología Eléctrica y Electrónica'),
+               (CIPOE, 'Coordinación de Ingeniería de Producción y Organización Empresarial'),
+               (CTHH, 'Coordinación de Turismo, Hotelería y Hospitalidad'),
+               (CAA, 'Coordinación de Administración Aduanera'),
+               (CCELCI, 'Coordinación de Comercio Exterior y Licenciatura en Comercio Internacional'),
+               (CATOE, 'Coordinación de Administración del Transporte y Organización Empresarial'),
+               (CTMMA, 'Coordinación de Tecnología Mecánica, Mantenimiento Aeronáutico e Ingeniería de Mantenimiento'),) ),
+        (DEP, ((CBA, 'Ciencias Básicas y Aplicadas'),
+               (CSHU, 'Ciencias Sociales y Humanidades'),
+               (IT, 'Ingeniería y Tecnología'),) ),
+        (DEPR,((CQ, 'Coordinación de Química'),
+               (CM, 'Coordinación de Matemática'),
+               (CBI, 'Coordinación de Biología'),
+               (CF, 'Coordinación de Física'),
+               (CTIE, 'Coordinación de Tecnología e Ingeniería Eléctrica'),
+               (CTIEL, 'Coordinación de Tecnología e Ingeniería Electrónica'),
+               (CIM, 'Coordinación de Ingeniería Mecánica'),
+               (CIQ, 'Coordinación de Ingeniería Química'),
+               (CIC, 'Coordinación de Ingeniería de Computación'),
+               (CIG, 'Coordinación de Ingeniería Geofísica'),
+               (CIMA, 'Coordinación de Ingeniería de Materiales'),
+               (CIPOE, 'Coordinación de Ingeniería de Producción y Organización Empresarial'),
+               (CTMMAIM, 'Coordinación de Tecnología Mecánica, Mantenimiento Aeronáutico e Ingeniería de Mantenimiento'),
+               (CIT, ' Coordinación de Ingeniería de Telecomunicaciones'),
+               (CA, 'Coordinación de Arquitectura'),
+               (CEU, 'Coordinación de Estudios Urbanos'),
+               (CTH, 'Coordinación de Turismo, Hotelería y Hospitalidad'),
+               (CCE, 'Coordinación de Comercio Exterior y Licenciatura en Comercio Internacional'),) )
+    )
+
+    departamento = forms.ChoiceField(
+        choices=DEPARTAMENTOS
+    )
+
+    TIPOS = (
+        ("PP", "Programas"),
+        ("TT", "Transcripciones"),
+        ("ALL", "Ambos")
+    )
+    tipo = forms.ChoiceField(
+        choices = TIPOS
+    )
 
 class PASAForm(forms.ModelForm):
     class Meta:
@@ -24,7 +170,7 @@ class DocumentForm(forms.ModelForm):
 class SaveForm(forms.ModelForm):
     class Meta:
         model = Document
-        fields = ['asignatura','codigo','creditos','year', 'trimestre','fecha','departamento','requisitos','justificacion','objetivos','contenidos','metodologias','evaluacion','bibliografias','horas_teoria','horas_lab','horas_practica','guardar']
+        fields = ['asignatura','codigo','creditos','fecha_vigano', 'fecha_vigtrim','fecha','departamento','requisitos','justificacion','objetivos','contenidos','metodologias','evaluacion','bibliografias','horas_teoria','horas_lab','horas_practica','guardar']
         
         def __init__(self, *args, **kwargs):
             super(SaveForm, self).__init__(*args, **kwargs)
@@ -36,8 +182,8 @@ class SaveForm(forms.ModelForm):
         h_teo = cleaned_data.get("horas_teoria")
         h_prac = cleaned_data.get("horas_practica")
         creds = cleaned_data.get("creditos")
-        year = cleaned_data.get("year")
-        trim = cleaned_data.get("trimestre")
+        year = cleaned_data.get("fecha_vigano")
+        trim = cleaned_data.get("fecha_vigtrim")
         pasa = cleaned_data.get("guardar")
         asig = cleaned_data.get("asignatura")
         fuentes = cleaned_data.get("bibliografias")
@@ -79,7 +225,6 @@ class SaveForm(forms.ModelForm):
             if progs.exists():
                 raise forms.ValidationError("Error: Ya existe un programa en SIGPAE con el mismo código y período")
 
-        print(cleaned_data)
         # Verificar que campos obligatorios no esten vacios
         if pasa == "PASA":
             if cod == '':
@@ -90,7 +235,7 @@ class SaveForm(forms.ModelForm):
             if year is None:
                 raise forms.ValidationError("Error: Para guardar como P.A.S.A. debe tener fecha")
             if trim == 'NN':
-                raise forms.ValidationError("Error: Para guardar como P.A.S.A. debe tener fecha")
+                raise forms.ValidationError("Error: Para guardar como P.A.S.A. debe tener Departamento válido")
             #horas teo, lab, prac
             if h_lab is None:
                 raise forms.ValidationError("Error: Para guardar como P.A.S.A. debe tener horas de laboratorio")
@@ -106,19 +251,19 @@ class SaveForm(forms.ModelForm):
 class SearchForm(forms.ModelForm):
     class Meta:
         model = Document
-        fields = ['codigo', 'year', 'trimestre']
+        fields = ['codigo', 'fecha_vigano', 'fecha_vigtrim']
 
     def __init__(self, *args, **kwargs):
         super(SearchForm, self).__init__(*args, **kwargs)
         self.fields['codigo'].required = True
-        self.fields['year'].required = False
-        self.fields['trimestre'].required = False
+        self.fields['fecha_vigano'].required = False
+        self.fields['fecha_vigtrim'].required = False
 
     def clean(self):
         cleaned_data = super(SearchForm, self).clean()
         cod = cleaned_data.get("codigo")
-        year = cleaned_data.get("year")
-        trim = cleaned_data.get("trimestre")
+        year = cleaned_data.get("fecha_vigano")
+        trim = cleaned_data.get("fecha_vigtrim")
 
         if (year is None and trim != 'NN') or (year is not None and trim == 'NN'):
            raise forms.ValidationError("Trimeste y año deben tener valores o ser ambos vacios.")
@@ -201,7 +346,7 @@ class BaseLinkFormSetR(BaseFormSet):
 class ViewPASAForm(forms.ModelForm):
     class Meta:
         model = Document
-        fields = ['nombre', 'email','telefono', 'asignatura','codigo','creditos','year', 'trimestre','departamento','requisitos','objetivos','contenidos','metodologias','evaluacion','bibliografias','horas_teoria','horas_lab','horas_practica']
+        fields = ['nombre', 'email','telefono', 'asignatura','codigo','creditos','fecha_vigano', 'fecha_vigtrim','departamento','requisitos','objetivos','contenidos','metodologias','evaluacion','bibliografias','horas_teoria','horas_lab','horas_practica']
 
     def __init__(self, *args, **kwargs):
         super(ViewPASAForm, self).__init__(*args, **kwargs)
@@ -211,8 +356,8 @@ class ViewPASAForm(forms.ModelForm):
         self.fields['asignatura'].disabled = True
         self.fields['codigo'].disabled = True
         self.fields['creditos'].disabled = True
-        self.fields['year'].disabled = True
-        self.fields['trimestre'].disabled = True
+        self.fields['fecha_vigano'].disabled = True
+        self.fields['fecha_vigtrim'].disabled = True
         self.fields['departamento'].disabled = True
         self.fields['requisitos'].disabled = True
         self.fields['objetivos'].disabled = True

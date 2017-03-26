@@ -2,21 +2,19 @@
 <!DOCTYPE html>
 <html>
     <head>
-      <head>
         <link rel="stylesheet" href="{% static "bootstrap/js/bootstrap.min.css" %}">
+        <link rel="stylesheet" href="{% static "bootstrap/js/bootstrap-theme.min.css" %}">
+        <script src="{% static "jquery/js/jquery-3.1.1.min.js" %}"></script>
         <script src="{% static "tinymce/tinymce.min.js" %}"></script>
         <script src="{% static "tinymce/tinymce.js" %}" ></script>
         <script src="{% static "bootstrap/js/bootstrap.min.js" %}"></script>
-        <script src="{% static "jquery/js/jquery-3.1.1.min.js" %}"></script>
         <script src="{% static "ddf/jquery.formset.js" %}"></script>
-      </head>
       <title>Proyecto SIGPAE</title>
     </head>
 
     <style>
     body,html {
         background-color:#f2f2f2;
-        padding-top:2%;
     }
     select {
         width: 100%;
@@ -24,17 +22,21 @@
     .panel-body {
         text-align:center;
     }
-    input {
-        width:100%;
+    .alert {
+        text-align:center;
     }
-    .btn {
-        border-radius:0px;
-    }
+    div.page-header.container h2 {margin:1%;}
+    div.page-header.container h3 {margin:1%;}
     </style>
 
     <body>
     {% block content %}
     {% endblock content %}
     </body>
-    <script src="{% static "script.js" %}"></script>
+    <footer>
+        <div class="center-block" style="text-align:center">
+            <small><p class="text-muted">Desarrollado por el equipo Lambda λ</p></small>
+        </div>
+        <script src="{% static "script.js" %}"></script>
+    </footer>
 </html>

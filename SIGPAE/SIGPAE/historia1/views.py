@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import *
 from .models import *
@@ -9,6 +10,7 @@ from django.contrib import messages
 from django import forms
 from django.db import IntegrityError, transaction
 from extraercodigo import  * 
+from itertools import chain
 
 import os
 # Create your views here.
@@ -17,8 +19,26 @@ from django.http import HttpResponse, HttpResponseRedirect
 def index(request):
     return render(request, 'historia1/index.html')
 
-def buscar(request):
-    return render(request, 'historia1/buscar.html')
+def r_global(request):
+    if request.method == 'POST':
+        form = ReportForm(request.POST)
+        if form.is_valid():
+            dep = form.cleaned_data['departamento']
+            if form.cleaned_data['tipo'] == 'PP':
+                query = Programa.objects.filter(departamento=dep).order_by('codigo', 'fecha_vigano')
+            elif form.cleaned_data['tipo'] == 'TT':
+                query = Document.objects.filter(departamento=dep).order_by('codigo', 'fecha_vigano')
+            elif form.cleaned_data['tipo'] == 'ALL':
+                query1 = Document.objects.filter(departamento=dep).order_by('codigo', 'fecha_vigano')
+                query2 = Programa.objects.filter(departamento=dep).order_by('codigo', 'fecha_vigano')
+                query = sorted(chain(query1, query2),
+                        key=lambda row: row.codigo)
+            else:
+                query = False
+            return render(request, 'historia1/global.html', {'form':form, 'query':query})
+    else:
+        form = ReportForm()
+    return render(request, 'historia1/global.html', {'form': form})    
 
 def buscar_s(request):
     if request.method == 'POST':
@@ -26,12 +46,12 @@ def buscar_s(request):
         docs = False
         if form.is_valid():
             codigo = form.cleaned_data['codigo'].upper()
-            year = form.cleaned_data['year']
-            trim = form.cleaned_data['trimestre']
+            year = form.cleaned_data['fecha_vigano']
+            trim = form.cleaned_data['fecha_vigtrim']
             if year is not None:
-                docs = Document.objects.all().filter(codigo=codigo,year=year,trimestre=trim,guardar="PASA").order_by('-year')
+                docs = Document.objects.all().filter(codigo=codigo,fecha_vigano=year,fecha_vigtrim=trim,guardar="PASA").order_by('-fecha_vigano')
             else:
-                docs = Document.objects.all().filter(codigo=codigo,guardar="PASA").order_by('-year')
+                docs = Document.objects.all().filter(codigo=codigo,guardar="PASA").order_by('-fecha_vigano')
         return render(request, 'historia1/buscar_s.html', {'form': form, 'query': docs})
     else:
         form = SearchForm()
@@ -51,12 +71,12 @@ def buscar_t(request):
         docs = False
         if form.is_valid():
             codigo = form.cleaned_data['codigo'].upper()
-            year = form.cleaned_data['year']
-            trim = form.cleaned_data['trimestre']
+            year = form.cleaned_data['fecha_vigano']
+            trim = form.cleaned_data['fecha_vigtrim']
             if year is not None:
-                docs = Document.objects.all().filter(codigo=codigo,year=year,trimestre=trim,guardar="TRAN").order_by('-year')
+                docs = Document.objects.all().filter(codigo=codigo,fecha_vigano=year,fecha_vigtrim=trim,guardar="TRAN").order_by('-fecha_vigano')
             else:
-                docs = Document.objects.all().filter(codigo=codigo,guardar="TRAN").order_by('-year')
+                docs = Document.objects.all().filter(codigo=codigo,guardar="TRAN").order_by('-fecha_vigano')
         return render(request, 'historia1/buscar_t.html', {'form': form, 'query': docs})
     else:
         form = SearchForm()
@@ -133,7 +153,7 @@ def editar_t(request, pk):
     codigo = extraerCodigo(strng)
     departamento = extraerDepartamento(codigo)
 
-    campos = ['asignatura','codigo','creditos','year', 'trimestre','fecha',
+    campos = ['asignatura','codigo','creditos','fecha_vigano', 'fecha_vigtrim','fecha',
             'departamento','requisitos','justificacion','objetivos','contenidos',
             'metodologias','evaluacion','bibliografias','horas_teoria','horas_lab',
             'horas_practica','guardar']
@@ -177,15 +197,15 @@ def editar_t(request, pk):
         temp = form.save(commit=False)
         if form.cleaned_data['fecha'] is not None:
             month = 1
-            if form.cleaned_data['trimestre'] == 'EM':
+            if form.cleaned_data['fecha_vigtrim'] == 'EM':
                 month = 1
-            elif form.cleaned_data['trimestre'] == 'AB':
+            elif form.cleaned_data['fecha_vigtrim'] == 'AB':
                 month = 4
-            elif form.cleaned_data['trimestre'] == 'SD':
+            elif form.cleaned_data['fecha_vigtrim'] == 'SD':
                 month = 9
 
-            if form.cleaned_data['year'] is not None: 
-                fecha = date(form.cleaned_data['year'], month, 1)
+            if form.cleaned_data['fecha_vigano'] is not None: 
+                fecha = date(form.cleaned_data['fecha_vigano'], month, 1)
                 temp.fecha = fecha
 
         for d in data:
