@@ -1,12 +1,12 @@
 {% extends 'historia1/base.html' %}
 {% load static %}
-
 {% block content %}
-
-<div style="text-align:center" class="page-header">
-  <img class="img-responsive center-block" src="{% static "images/usb.png" %}" width="10%" height="auto">
-  <h1>SIGPAE-Históricos</h1>
-  <h2><small>Sistema de Gestión de Programas Analíticos de Estudio</small></h2>
+<div style="text-align:center" class="page-header container">
+  <div class="jumbotron">
+    <img class="img-responsive center-block" src="{% static "images/usb.png" %}" width="10%" height="auto">
+    <h1>SIGPAE-Históricos</h1>
+    <h2><small>Sistema de Gestión de Programas Analíticos de Estudio</small></h2>
+  </div>
 </div>
   {% if request.GET.msg %}
     {% if request.GET.msg == "pasa_saved"%}
@@ -16,7 +16,6 @@
       <div class="alert alert-danger">Ha ocurrido un error. Intente de nuevo.</div>
     {% endif %}
   {% endif %}
-
 <div class="container">
   <div class="row">
     <div class="col-md-4">
@@ -37,7 +36,7 @@
         </div>
         <div class="panel-body">
           <a href="/consultar/p" role="button" class="btn btn-primary btn-lg btn-block">Programas</a>
-          <a href="/consultar/s" role="button" class="btn btn-primary btn-lg btn-block">PASA</a>
+          <a href="/consultar/s" role="button" class="btn btn-primary btn-lg btn-block">Por Aprobar</a>
           <a href="/consultar/t" role="button" class="btn btn-primary btn-lg btn-block">Transcripciones</a>
         </div>
       </div>
