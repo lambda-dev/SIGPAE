@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import *
 from .models import *
@@ -17,8 +18,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 def index(request):
     return render(request, 'historia1/index.html')
 
-def buscar(request):
-    return render(request, 'historia1/buscar.html')
+def r_global(request):
+    return render(request, 'historia1/global.html')    
 
 def buscar_s(request):
     if request.method == 'POST':
