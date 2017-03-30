@@ -92,17 +92,16 @@ def extraerCodigo(texto):
 		return "NULL"
 
 def extraerDepartamento(texto):
-    pre=extraerCodigo(texto)
-    print(pre)
-
-    if (pre!=None):
-	    cod=re.search('[A-Z]*',pre).group(0)
-	    if (departamentos.get(cod)!=None):
-	    	return departamentos.get(cod)
-	    else:
-	    	return "NULL"
-    else:
-        return "NULL"
+	pre=extraerCodigo(texto)
+	print(pre)
+	if (pre!=None):
+		cod=re.search('[A-Z]*',pre).group(0)
+		if (departamentos.get(cod)!=None):
+			return departamentos.get(cod)
+		else:
+			return "NULL"
+	else:
+		return "NULL"
 # PRUEBAS
 #print(extraerCodigo('CI 3715'))
 #print(extraerDepartamento('CI 3715'))
