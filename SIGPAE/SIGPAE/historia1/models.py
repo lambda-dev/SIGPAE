@@ -192,7 +192,6 @@ class Document(models.Model):
     contenidos= models.TextField('Contenidos Sinópticos', blank=True)
     metodologias=models.TextField('Estrategias Metodológicas', blank=True)
     evaluacion=models.TextField('Estrategias de Evaluación', blank=True)
-    bibliografias=models.TextField('Fuentes de Información Recomendadas', blank=True)
     fecha= models.DateField('Entrada en Vigencia', blank=True,null=True)
     horas_teoria=models.PositiveIntegerField('Horas de Teoría', blank=True,null=True,validators=[MaxValueValidator(40)])
     horas_lab=models.PositiveIntegerField('Horas de Laboratorio', blank=True,null=True,validators=[MaxValueValidator(40)])
@@ -400,8 +399,8 @@ class CamposExtra(models.Model):
         return self.nombre
 
 class DatosReferencia(models.Model):
-    edicion=models.CharField('Edición', max_length=255, blank=False)
-    editorial=models.CharField('Editorial', max_length=255, blank=False)
-    year_r=models.IntegerField('Año', blank=False, validators=[MaxValueValidator(2017)])
-    nota=models.TextField('Notas', max_length=255, blank=False)
+    edicion=models.CharField('Edición', max_length=255, blank=True)
+    editorial=models.CharField('Editorial', max_length=255, blank=True)
+    year_r=models.IntegerField('Año', blank=True, validators=[MaxValueValidator(2017)])
+    nota=models.TextField('Notas', max_length=255, blank=True)
     referencia = models.ForeignKey(Referencia, blank=False)

@@ -170,7 +170,7 @@ class DocumentForm(forms.ModelForm):
 class SaveForm(forms.ModelForm):
     class Meta:
         model = Document
-        fields = ['asignatura','codigo','creditos','fecha_vigano', 'fecha_vigtrim','departamento','requisitos','justificacion','objetivos','contenidos','metodologias','evaluacion','bibliografias','horas_teoria','horas_lab','horas_practica','guardar']
+        fields = ['asignatura','codigo','creditos','fecha_vigano', 'fecha_vigtrim','departamento','requisitos','justificacion','objetivos','contenidos','metodologias','evaluacion','horas_teoria','horas_lab','horas_practica','guardar']
         
         def __init__(self, *args, **kwargs):
             super(SaveForm, self).__init__(*args, **kwargs)
@@ -186,7 +186,6 @@ class SaveForm(forms.ModelForm):
         trim = cleaned_data.get("fecha_vigtrim")
         pasa = cleaned_data.get("guardar")
         asig = cleaned_data.get("asignatura")
-        fuentes = cleaned_data.get("bibliografias")
         sinop = cleaned_data.get("contenidos")
 
         if h_lab is not None and h_teo is not None and h_prac is not None:
@@ -244,8 +243,6 @@ class SaveForm(forms.ModelForm):
                 raise forms.ValidationError("Error: Para guardar como P.A.S.A. debe tener horas de práctica")
             if sinop == '':
                 raise forms.ValidationError("Error: Para guardar como P.A.S.A. debe tener contenidos sinópticos")
-            if fuentes == '':
-                raise forms.ValidationError("Error: Para guardar como P.A.S.A. debe tener fuentes")
 
 class SearchForm(forms.ModelForm):
     class Meta:
@@ -341,7 +338,7 @@ class BaseLinkFormSetR(BaseFormSet):
 class ViewPASAForm(forms.ModelForm):
     class Meta:
         model = Document
-        fields = ['nombre', 'email','telefono', 'asignatura','codigo','creditos','fecha_vigano', 'fecha_vigtrim','departamento','requisitos','objetivos','contenidos','metodologias','evaluacion','bibliografias','horas_teoria','horas_lab','horas_practica']
+        fields = ['nombre', 'email','telefono', 'asignatura','codigo','creditos','fecha_vigano', 'fecha_vigtrim','departamento','requisitos','objetivos','contenidos','metodologias','evaluacion','horas_teoria','horas_lab','horas_practica']
 
     def __init__(self, *args, **kwargs):
         super(ViewPASAForm, self).__init__(*args, **kwargs)
@@ -358,7 +355,6 @@ class ViewPASAForm(forms.ModelForm):
         self.fields['objetivos'].disabled = True
         self.fields['metodologias'].disabled = True
         self.fields['evaluacion'].disabled = True
-        self.fields['bibliografias'].disabled = True
         self.fields['horas_teoria'].disabled = True
         self.fields['horas_lab'].disabled = True
         self.fields['horas_practica'].disabled = True

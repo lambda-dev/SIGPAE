@@ -155,7 +155,7 @@ def editar_t(request, pk):
 
     campos = ['asignatura','codigo','creditos','fecha_vigano', 'fecha_vigtrim','fecha',
             'departamento','requisitos','justificacion','objetivos','contenidos',
-            'metodologias','evaluacion','bibliografias','horas_teoria','horas_lab',
+            'metodologias','evaluacion','horas_teoria','horas_lab',
             'horas_practica','guardar']
 
     if doc.guardar == 'PASA':
@@ -235,18 +235,6 @@ def referencias(request, pk):
         form = SaveForm(request.POST or None, instance=doc)
         if form.is_valid() and form_.is_valid():
             temp = form.save(commit=False)
-            if form.cleaned_data['fecha'] is not None:
-                month = 1
-                if form.cleaned_data['fecha_vigtrim'] == 'EM':
-                    month = 1
-                elif form.cleaned_data['fecha_vigtrim'] == 'AB':
-                    month = 4
-                elif form.cleaned_data['fecha_vigtrim'] == 'SD':
-                    month = 9
-
-                if form.cleaned_data['fecha_vigano'] is not None: 
-                    fecha = date(form.cleaned_data['fecha_vigano'], month, 1)
-                    temp.fecha = fecha
                 
             for l in form_:
                 nombre = l.cleaned_data.get('nombre')
