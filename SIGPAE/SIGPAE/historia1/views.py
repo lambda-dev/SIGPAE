@@ -16,9 +16,12 @@ import os
 # Create your views here.
 from django.http import HttpResponse, HttpResponseRedirect
 
+# Index del sistema
 def index(request):
     return render(request, 'historia1/index.html')
 
+# VIEW: Reportes globales
+# Hace queries a la base de datos segun el tipo para mostrar el reporte
 def r_global(request):
     if request.method == 'POST':
         form = ReportForm(request.POST)
@@ -40,6 +43,8 @@ def r_global(request):
         form = ReportForm()
     return render(request, 'historia1/global.html', {'form': form})    
 
+# VIEW: Buscar Por Aprobar
+# Busca en la base de datos los documentos guardados Por Aprobar y los muestra
 def buscar_s(request):
     if request.method == 'POST':
         form = SearchForm(request.POST)
@@ -57,6 +62,8 @@ def buscar_s(request):
         form = SearchForm()
         return render(request, 'historia1/buscar_s.html', {'form': form})
 
+# VIEW: Ver Por Aprobar
+# Muestra los campos del documento Por Aprobar, no deja editarlos
 def view_s(request, pk):
     doc = get_object_or_404(Document, pk=pk)
     if doc.guardar == 'TRAN':
@@ -65,6 +72,8 @@ def view_s(request, pk):
     form = ViewPASAForm(request.POST or None, instance=doc)
     return render(request, 'historia1/view_s.html', {'form':form})
 
+# VIEW: Buscar Transcripciones
+# Busca en la base de datos los documentos guardados de tipo Transcripcion y los muestra
 def buscar_t(request):
     if request.method == 'POST':
         form = SearchForm(request.POST)
@@ -82,6 +91,8 @@ def buscar_t(request):
         form = SearchForm()
         return render(request, 'historia1/buscar_t.html', {'form': form})
 
+# VIEW: Buscar Programas
+# Busca en la base de datos los documentos guardados de tipo Programa y los muestra
 def buscar_p(request):
     if request.method == 'POST':
         form = SearchFormProg(request.POST)
@@ -99,6 +110,8 @@ def buscar_p(request):
         form = SearchFormProg()
         return render(request, 'historia1/buscar_p.html', {'form': form})
 
+# VIEW: Subir PDF
+# Formulario para subir los archivos PDF al sistema
 def model_form_upload(request):
     error = ""
     scan=False
@@ -138,11 +151,15 @@ def model_form_upload(request):
     'form' : form, 'error': error
     })
 
+# VIEW: Mostrar Programa
+# Muestra un documento de tipo Programa, con sus campos no editables
 def view_p(request, pk):
     prog = get_object_or_404(Programa, pk=pk)
     form = ViewProgForm(request.POST or None, instance=prog)
     return render(request, 'historia1/view_p.html', {'form':form})
 
+# VIEW: Editar
+# Muestra el formulario responsable de editar las transcripciones, junto al manejo de campos extra
 def editar_t(request, pk):
     ## TODO
     # GUARDAR STRNG SI LO MODIFICO !!
@@ -210,8 +227,9 @@ def editar_t(request, pk):
     return render(request, 'historia1/editar.html', {'departamento': departamento, 'codigo': codigo,'strng': strng, 'url': url, 'form_s': form, 
                                                     'requeridos':requeridos,'form_':form_,'act':y, 'pk': pk})
 
+# VIEW: Formulario Por Aprobar
+# Le pide al usuario los datos a guardar cuando es un documento Por Aprobar
 def form_pasa(request, pk):
-    #if request.method == 'POST':
     doc = get_object_or_404(Document, pk=pk)
     form = PASAForm(request.POST or None, instance=doc)
         
@@ -220,8 +238,9 @@ def form_pasa(request, pk):
         return redirect('/?msg=pasa_saved')
             
     return render(request, 'historia1/pasa.html', {'form':form, 'pk':pk})
-    #return redirect('/?msg=error')
 
+# VIEW: Referencias
+# Muestra la pantalla donde se maneja el agregar las fuentes de información
 def referencias(request, pk):
     doc = get_object_or_404(Document, pk=pk)
     if request.method == 'POST':
@@ -255,6 +274,8 @@ def referencias(request, pk):
         query = Referencia.objects.filter(document=doc)
         return render(request, 'historia1/referencias.html', {'query':query, 'pkD':pk})
 
+# VIEW: Añadir libro nuevo
+# Añade un libro nuevo a las fuentes de información
 def add_ref(request, pk):
     doc = get_object_or_404(Document, pk=pk)
     if request.method == 'POST':
@@ -268,11 +289,15 @@ def add_ref(request, pk):
         form = RefForm()
     return render(request, 'historia1/add_ref.html', {'pk':pk, 'form':form, 'url': doc.document.url})
 
+# VIEW: Ver datos extra de la Fuente
+# Permite ver todos los autores y todos los datos extra de la fuente y permite elegir cual añadir
 def add_extra(request, pkD, pkR):
     query = Autores.objects.filter(referencia=pkR)
     query2 = DatosReferencia.objects.filter(referencia=pkR)
     return render(request, 'historia1/add_extra.html', {'pkD':pkD, 'pkR':pkR, 'query':query,'query2':query2})
 
+# VIEW: Añadir Autor
+# Permite añadir autores nuevos a la fuente de información
 def add_autores(request, pkD, pkR):
     doc = get_object_or_404(Document, pk=pkD)
     form = AutForm()
@@ -287,6 +312,8 @@ def add_autores(request, pkD, pkR):
         return redirect('/add/referencias/extra/'+pkD+'/'+pkR)
     return render(request, 'historia1/add_autor.html', {'form':form, 'url': doc.document.url})
 
+# VIEW: Añadir datos de la Fuente
+# Añade datos extra a la fuente de información, como editorial, año, etc
 def add_extras(request, pkD, pkR):
     doc = get_object_or_404(Document, pk=pkD)
     form = FormDatosRef()

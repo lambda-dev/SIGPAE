@@ -3,6 +3,8 @@ from __future__ import unicode_literals
 from django.core.validators import *
 from django.db import models
 
+
+## Definicion de Departamentos para los Dropdowns ##
 CFM = 'Ciencias Físicas y Matemáticas'
 CSH = 'Ciencias Sociales y Humanidades'
 CB = 'Ciencias Biológicas'
@@ -134,7 +136,10 @@ DEPARTAMENTOS = (
            (CTH, 'Coordinación de Turismo, Hotelería y Hospitalidad'),
            (CCE, 'Coordinación de Comercio Exterior y Licenciatura en Comercio Internacional'),) )
 )
+############################################################################################################
 
+# CLASE Programa
+# Agrupa los Programas Aprobados que se encontraban en la base de datos SIPGAE
 class Programa(models.Model):
     TRIMESTRES = (
         ('AB', 'Abril - Julio'),
@@ -178,7 +183,8 @@ class Programa(models.Model):
         return reverse('view_p', kwargs={'pk': self.pk})
 
 
-# Create your models here.
+# CLASE Documento
+# Agrupa todas las Transcripciones y documentos Por Aprobar que son agregados al sistema actual (SIGPAE-Historico)
 class Document(models.Model):
     tipo = models.CharField('Tipo', blank=False,max_length=30,default="Transcripción")
     name = models.CharField(max_length=255)
@@ -233,74 +239,6 @@ class Document(models.Model):
     )
 
     ZZ = 'NN'
-    CFM = 'Ciencias Físicas y Matemáticas'
-    CSH = 'Ciencias Sociales y Humanidades'
-    CB = 'Ciencias Biológicas'
-    CTAI = 'Ciencias y Tecnologías Administrativas e Industriales'
-    DEG ='Decanato de Estudios Generales'
-    DET='Decanato de Estudios Tecnológicos'
-    DEP='Decanato de Estudios de Postgrado'
-    DEPR='Decanato de Estudios Profesionales'
-    DF = '1'
-    DQ = '2'
-    DM = '3'
-    DMP= '4'
-    DCTI= '5'
-    DCCE= '6'
-    DEC= '7'
-    DTFT='8'
-    DCTE='9'
-    DPS='10'
-    DCM='11'
-    DCT='12'
-    DCTC='13'
-    DLL='14'
-    DCEA='15'
-    DI='16'
-    DFI='17'
-    DCS='18'
-    DDAAP='19'
-    DPU='20'
-    DBC='21'
-    DEA='22'
-    DBO='23'
-    DTPBB='24'
-    DTS='25'
-    DTI='26'
-    DFGCB='27'
-    CCB='28'
-    CCP='29'
-    CFG='30'
-    CCIU='31'
-    CTIE='32'
-    CTEE='33'
-    CIPOE='34'
-    CTHH='35'
-    CAA='36'
-    CCELCI='37'
-    CATOE='38'
-    CTMMA='39'
-    CBA='40'
-    CSHU='41'
-    IT='42'
-    CQ='43'
-    CM='44'
-    CBI='45'
-    CF='46'
-    CTIE='47'
-    CTIEL='48'
-    CIM='49'
-    CIQ='50'
-    CIC='51'
-    CIG='52'
-    CIMA='53'
-    CIPOE='54'
-    CTMMAIM='55'
-    CIT='56'
-    CA='57'
-    CEU='58'
-    CTH='59'
-    CCE='60'
 
     DEPARTAMENTOS = (
         (CFM, ((DF, 'Departamento de Física'),
@@ -378,6 +316,8 @@ class Document(models.Model):
     def get_absolute_url(self):
       return reverse('editar_t', kwargs={'pk': self.pk})
 
+# CLASE Referencia
+# Agrupa las Fuentes de Información asociadas a cada Documento
 class Referencia(models.Model):
       titulo = models.CharField(max_length=255,blank=False)
       document = models.ManyToManyField(Document, blank=False)
@@ -385,11 +325,24 @@ class Referencia(models.Model):
       def __str__(self):
           return str(self.id)
 
+# CLASE Autores
+# Agrupa los Autores asociados a cada Referencia
 class Autores(models.Model):
       name = models.CharField('Nombre',max_length=255,blank=False)
       apellido = models.CharField(max_length=255,blank=False)
       referencia = models.ForeignKey(Referencia, blank=False)
 
+# CLASE DatosReferencia
+# Agrupa todos los datos extra asociados a cada Referencia
+class DatosReferencia(models.Model):
+    edicion=models.CharField('Edición', max_length=255, blank=True)
+    editorial=models.CharField('Editorial', max_length=255, blank=True)
+    year_r=models.IntegerField('Año', blank=True, validators=[MaxValueValidator(2017)])
+    nota=models.TextField('Notas', max_length=255, blank=True)
+    referencia = models.ForeignKey(Referencia, blank=False)
+
+# CLASE CamposExtra
+# Agrupa los campos extra que pueden ser añadidos a las Transcripciones
 class CamposExtra(models.Model):
     nombre = models.CharField('Nombre', max_length=255, blank=False)
     value = models.TextField('Texto', blank=False)
@@ -397,10 +350,3 @@ class CamposExtra(models.Model):
 
     def __str__(self):
         return self.nombre
-
-class DatosReferencia(models.Model):
-    edicion=models.CharField('Edición', max_length=255, blank=True)
-    editorial=models.CharField('Editorial', max_length=255, blank=True)
-    year_r=models.IntegerField('Año', blank=True, validators=[MaxValueValidator(2017)])
-    nota=models.TextField('Notas', max_length=255, blank=True)
-    referencia = models.ForeignKey(Referencia, blank=False)
