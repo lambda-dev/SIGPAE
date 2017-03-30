@@ -206,7 +206,7 @@ class Document(models.Model):
     telefono = models.CharField('Teléfono', max_length=30, blank=False)
     
     opciones = (
-      ('PASA', 'P.A.S.A.'),
+      ('PASA', 'Por Aprobar'),
       ('TRAN', 'Transcripción')
       )
     guardar = models.CharField('Guardar como:',
@@ -380,14 +380,15 @@ class Document(models.Model):
       return reverse('editar_t', kwargs={'pk': self.pk})
 
 class Referencia(models.Model):
-      titulo = models.CharField(max_length=255,blank=True)
-      editorial= models.CharField(max_length=255,blank=True)
-      edicion = models.CharField(max_length=255,blank=True)
+      titulo = models.CharField(max_length=255,blank=False)
       document = models.ManyToManyField(Document, blank=False)
 
+      def __str__(self):
+          return str(self.id)
+
 class Autores(models.Model):
-      name = models.CharField('Nombre',max_length=255,blank=True)
-      apellido = models.CharField(max_length=255,blank=True)
+      name = models.CharField('Nombre',max_length=255,blank=False)
+      apellido = models.CharField(max_length=255,blank=False)
       referencia = models.ForeignKey(Referencia, blank=False)
 
 class CamposExtra(models.Model):
@@ -397,3 +398,10 @@ class CamposExtra(models.Model):
 
     def __str__(self):
         return self.nombre
+
+class DatosReferencia(models.Model):
+    edicion=models.CharField('Edición', max_length=255, blank=False)
+    editorial=models.CharField('Editorial', max_length=255, blank=False)
+    year_r=models.IntegerField('Año', blank=False, validators=[MaxValueValidator(2017)])
+    nota=models.TextField('Notas', max_length=255, blank=False)
+    referencia = models.ForeignKey(Referencia, blank=False)

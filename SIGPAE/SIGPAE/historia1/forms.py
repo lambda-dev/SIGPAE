@@ -170,7 +170,7 @@ class DocumentForm(forms.ModelForm):
 class SaveForm(forms.ModelForm):
     class Meta:
         model = Document
-        fields = ['asignatura','codigo','creditos','fecha_vigano', 'fecha_vigtrim','fecha','departamento','requisitos','justificacion','objetivos','contenidos','metodologias','evaluacion','bibliografias','horas_teoria','horas_lab','horas_practica','guardar']
+        fields = ['asignatura','codigo','creditos','fecha_vigano', 'fecha_vigtrim','departamento','requisitos','justificacion','objetivos','contenidos','metodologias','evaluacion','bibliografias','horas_teoria','horas_lab','horas_practica','guardar']
         
         def __init__(self, *args, **kwargs):
             super(SaveForm, self).__init__(*args, **kwargs)
@@ -188,7 +188,6 @@ class SaveForm(forms.ModelForm):
         asig = cleaned_data.get("asignatura")
         fuentes = cleaned_data.get("bibliografias")
         sinop = cleaned_data.get("contenidos")
-        print(cleaned_data)
 
         if h_lab is not None and h_teo is not None and h_prac is not None:
             if h_lab + h_teo + h_prac > 40:
@@ -313,22 +312,18 @@ class ViewProgForm(forms.ModelForm):
 class RefForm(forms.ModelForm):
     class Meta:
         model = Referencia
-        fields = ['titulo','editorial','edicion']
+        fields = ['titulo', 'document']
 
         def __init__(self, *args, **kwargs):
             super(RefForm, self).__init__(*args, **kwargs)
             self.fields['titulo'].required = True
-            self.fields['editorial'].required = True
-            self.fields['edicion'].required = True
-            self.fields['titulo'].label = "Titulo del libro"
-            self.fields['editorial'].label = "Editorial del libro"
-            self.fields['edicion'].label = "Edicion y/o año de vigencia"
+            self.fields['titulo'].label = "Título"
 
 
 class AutForm(forms.ModelForm):
     class Meta:
         model = Autores
-        fields = ['name','apellido']
+        fields = ['name','apellido','referencia']
 
         def __init__(self, *args, **kwargs):
             super(AutForm, self).__init__(*args, **kwargs)
@@ -368,6 +363,11 @@ class ViewPASAForm(forms.ModelForm):
         self.fields['horas_lab'].disabled = True
         self.fields['horas_practica'].disabled = True
 
+class FormDatosRef(forms.ModelForm):
+    class Meta:
+        model = DatosReferencia
+        fields = ['editorial','edicion','year_r','nota', 'referencia']
+
 class ExtraFields(forms.ModelForm):
     class Meta:
         model = CamposExtra
@@ -375,8 +375,8 @@ class ExtraFields(forms.ModelForm):
 
         def __init__(self, *args, **kwargs):
             super(ExtraFields, self).__init__(*args, **kwargs)
-            self.fields['nombre'].required = True
-            self.fields['value'].required = True
+            self.fields['nombre'].required = False
+            self.fields['value'].required = False
             self.fields['nombre'].label = "Nombre:"
             self.fields['value'].label = "Texto:"
 
@@ -388,9 +388,11 @@ class BaseLinkFormSet(BaseFormSet):
             return
         titles = []
         for form in self.forms:
-            if 'nombre' in form.cleaned_data:
+            try:
                 title = form.cleaned_data['nombre']
                 if title in titles:
                     raise forms.ValidationError("Los campos deben tener nombres distintos")
                 titles.append(title)
+            except:
+                pass
 

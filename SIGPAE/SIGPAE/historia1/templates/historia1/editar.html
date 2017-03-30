@@ -36,13 +36,6 @@
 
           <option selected disabled hidden value="">Seleccione Un Tipo de Campo a Agregar</option>
 
-          <optgroup label="Campos Normados">
-            <option value="1">Requisitos</option>
-            <option value="2">Objetivos</option>
-            <option value="3">Estrategias Metodológicas</option>
-            <option value="4">Estrategias de Evaluación</option>
-          </optgroup>
-
           <optgroup label="Campos Adicionales">
             <option value="5">Justificación</option>
             <option value="6">Ninguna de las Anteriores</option>
@@ -60,7 +53,7 @@
       </select>
       </div>
 
-    <form method="post" enctype="multipart/form-data">
+    <form id="formS" method="post" enctype="multipart/form-data">
       {% if form_s.non_field_errors %}
         {% for error in form_s.non_field_errors %}
          <div class="alert alert-danger" role="alert"> {{error}}</div>
@@ -120,180 +113,99 @@
       {% endfor %}
 
       <script>
-        $('.formset').formset({
-              addText: 'add link',
-              deleteText: 'remove'
-          });
-        $('#agregar').on('click',function(){
-          $("#tipoCampo").show();
-        });
-        var delete_click = $('.delete-row').last();
-        delete_click.click();
-        $('.add-row').hide();
-        $('.delete-row').hide();
-        $('#nuevoCampo').on('click',function(){
-          x = $('select').val();
-          console.log(x);
-          switch (x) {
-            case '1':
-              $('.form-group:contains(Requisitos:)').show();
-              break;
-            case '2':
-              $('.form-group:contains(Objetivos:)').show();
-              break;
-            case '3':
-              $('.form-group:contains(Estrategias Metodológicas:)').show();
-              break;
-            case '4':
-              $('.form-group:contains(Estrategias de Evaluación:)').show();
-              break;
-            case '5':
-              $('.form-group:contains(Justificación:)').show()
-              break;
-            default:
-              $('.add-row').click();
-              break;
-          }
-        $('#select').prop('selectedIndex',0);
-        $("#tipoCampo").hide();
-        $('.delete-row').hide();
-        });
-      </script>
 
-      <div id="0">
-      {% for field in form_1 %}
-      <div class="formset" id="{{field.auto_id}}">
-        {% if field.errors %}
-          {% for error in field.errors %}
-            <div class="alert alert-danger" role="alert">{{ error }}</div>
-          {% endfor %}
-        {% endif %}
-        {{ field.label_tag }} {{ field }}
-      </div>
-      {% endfor %}
+  $('.formset').formset({
+        addText: 'add link',
+        deleteText: 'remove'
+    });
 
-      {{ form_2.management_form }}
-      {% for field in form_2 %}
-      <div class="formset_" id="{{field.auto_id}}">
-        {% if field.errors %}
-          {% for error in field.errors %}
-            <div class="alert alert-danger" role="alert">{{ error }}</div>
-          {% endfor %}
-        {% endif %}
-        {{ field.label_tag }} {{ field }}
-      </div>
-      {% endfor %}
-      </div>
+  $('#agregar').on('click',function(){
+    $("#tipoCampo").show();
+  });
 
-      <div id="1">
-      {% for field in form_3 %}
-      <div class="formset" id="{{field.auto_id}}">
-        {% if field.errors %}
-          {% for error in field.errors %}
-            <div class="alert alert-danger" role="alert">{{ error }}</div>
-          {% endfor %}
-        {% endif %}
-        {{ field.label_tag }} {{ field }}
-      </div>
-      {% endfor %}
+  $('div.formset').each(function(){
+    x = $(this).find('input').first();
+    x.parent().prepend("<p id='error' style='color:red;display:none;'>Por favor llene ambos campos</p>");
+  });
 
-      {{ form_4.management_form }}
-      {% for field in form_4 %}
-      <div class="formset_1" id="{{field.auto_id}}">
-        {% if field.errors %}
-          {% for error in field.errors %}
-            <div class="alert alert-danger" role="alert">{{ error }}</div>
-          {% endfor %}
-        {% endif %}
-        {{ field.label_tag }} {{ field }}
-      </div>
-      {% endfor %}
-      </div>
+  $('div.formset label').css('visibility','hidden');
 
+  function validateForm(event){
+    var i = 0;
+    var z = true;
+    $('div.formset').each(function(){
+      var act = null;
 
-      <div id="2">
-      {% for field in form_5 %}
-      <div class="formset" id="{{field.auto_id}}">
-        {% if field.errors %}
-          {% for error in field.errors %}
-            <div class="alert alert-danger" role="alert">{{ error }}</div>
-          {% endfor %}
-        {% endif %}
-        {{ field.label_tag }} {{ field }}
-      </div>
-      {% endfor %}
+      x = $(this).find('input').first();
+      y = $(this).find('textarea').first();
+      id = "id_form-"+String(i)+"-value";
 
-      {{ form_6.management_form }}
-      {% for field in form_6 %}
-      <div class="formset_2" id="{{field.auto_id}}">
-        {% if field.errors %}
-          {% for error in field.errors %}
-            <div class="alert alert-danger" role="alert">{{ error }}</div>
-          {% endfor %}
-        {% endif %}
-        {{ field.label_tag }} {{ field }}
-      </div>
-      {% endfor %}
-      </div>
+      for (j=0; j < tinyMCE.editors.length; j++){
+        if (tinyMCE.editors[j].id == id){
+          act = tinyMCE.editors[j];
+          break;
+        }
+      }
 
+      if (act != null){
+        content = act.getContent();
+      }
 
-      <div id="3">
-      {% for field in form_7 %}
-      <div class="formset" id="{{field.auto_id}}">
-        {% if field.errors %}
-          {% for error in field.errors %}
-            <div class="alert alert-danger" role="alert">{{ error }}</div>
-          {% endfor %}
-        {% endif %}
-        {{ field.label_tag }} {{ field }}
-      </div>
-      {% endfor %}
+      if (x.val() == '' || y.val() == '' || x.val() == null || y.val() == null || content == ""){
+        console.log('SI');
+        z = false;
+        x.parent().find('#error').show();
+      }else{
+        x.parent().find('#error').hide();
+      }
+      i ++;
+    });
+    return z;
+  }
 
-      {{ form_8.management_form }}
-      {% for field in form_8 %}
-      <div class="formset_3" id="{{field.auto_id}}">
-        {% if field.errors %}
-          {% for error in field.errors %}
-            <div class="alert alert-danger" role="alert">{{ error }}</div>
-          {% endfor %}
-        {% endif %}
-        {{ field.label_tag }} {{ field }}
-      </div>
-      {% endfor %}
-      </div>
+  $('#formS').submit(function(evt){
+    x = validateForm();
+    return x;
+  });
 
+  var delete_click = $('.delete-row').last();
+  delete_click.click();
+  $('.add-row').hide();
+  $('.delete-row').hide();
 
-      <div id="4">
-      {% for field in form_9 %}
-      <div class="formset" id="{{field.auto_id}}">
-        {% if field.errors %}
-          {% for error in field.errors %}
-            <div class="alert alert-danger" role="alert">{{ error }}</div>
-          {% endfor %}
-        {% endif %}
-        {{ field.label_tag }} {{ field }}
-      </div>
-      {% endfor %}
+  $('#nuevoCampo').on('click',function(){
+    x = $('select').val();
+    console.log(x);
+    switch (x) {
+      case '1':
+        $('.form-group:contains(Requisitos:)').show();
+        break;
+      case '2':
+        $('.form-group:contains(Objetivos:)').show();
+        break;
+      case '3':
+        $('.form-group:contains(Estrategias Metodológicas:)').show();
+        break;
+      case '4':
+        $('.form-group:contains(Estrategias de Evaluación:)').show();
+        break;
+      case '5':
+        $('.form-group:contains(Justificación:)').show()
+        break;
+      default:
+        $('.add-row').click();
+        break;
+    }
+  $('#select').prop('selectedIndex',0);
+  $("#tipoCampo").hide();
+  $('.delete-row').hide();
 
-      {{ form_10.management_form }}
-      {% for field in form_10 %}
-      <div class="formset_4" id="{{field.auto_id}}">
-        {% if field.errors %}
-          {% for error in field.errors %}
-            <div class="alert alert-danger" role="alert">{{ error }}</div>
-          {% endfor %}
-        {% endif %}
-        {{ field.label_tag }} {{ field }}
-      </div>
-      {% endfor %}
-      </div>
+  });
 
-      <button class="btn btn-primary" id="agRef" type="button">Agregar Referencia</button>
+</script>
+      <button formaction="/editar/referencias/{{pk}}" formmethod="POST" class="btn btn-primary" id="agRef" type="submit">Agregar Referencia</button>
 
-
-
-
-      <div style="display:none;" id="msg" class="alert alert-warning">Recuerde que para ser P.A.S.A. todos los campos <strong>obligatorios</strong> deben estar <strong>llenos</strong> y cumplir sus <strong>restricciones</strong></div>
+      <div style="display:none;" id="msg" class="alert alert-warning">Recuerde que para guardar como Por Aprobar todos los campos <strong>obligatorios</strong> deben estar <strong>llenos</strong> y cumplir sus <strong>restricciones</strong></div>
       <button class="btn btn-primary btn-lg" type="submit">Guardar</button>
 
     <script>
@@ -369,41 +281,5 @@
     </div>
   </div>
 </div>
-<script>
-  $('.formset_').formset({
-        addText: 'agregar autor',
-        deleteText: 'remove'
-    });
-  $('.formset_1').formset({
-        addText: 'agregar autor',
-        deleteText: 'remove'
-    });
-  $('.formset_2').formset({
-        addText: 'agregar autor',
-        deleteText: 'remove'
-    });
-  $('.formset_3').formset({
-        addText: 'agregar autor',
-        deleteText: 'remove'
-    });
-  $('.formset_4').formset({
-        addText: 'agregar autor',
-        deleteText: 'remove'
-    });
-
-  var i = 1
-  x = '.formset_'
-
-  for (j=1;j<5;j++){
-    y = '#' + j.toString();
-    $(y).hide();
-  }
-
-  $('#agRef').on('click',function(){
-    y = '#' + i.toString();
-    $(y).show();
-    i += 1
-  });
-</script>
 
 {% endblock %}

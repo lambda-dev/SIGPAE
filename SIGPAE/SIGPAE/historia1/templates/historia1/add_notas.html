@@ -1,0 +1,89 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="{% static "bootstrap/js/bootstrap.min.css" %}">
+        <link rel="stylesheet" href="{% static "bootstrap/js/bootstrap-theme.min.css" %}">
+        <script src="{% static "jquery/js/jquery-3.1.1.min.js" %}"></script>
+        <script src="{% static "bootstrap/js/bootstrap.min.js" %}"></script>
+        <script src="{% static "ddf/jquery.formset.js" %}"></script>
+      <title>Proyecto SIGPAE</title>
+    </head>
+
+    <style>
+    body,html {
+        background-color:#f2f2f2;
+    }
+    select {
+        width: 100%;
+    }
+    .panel-body {
+        text-align:center;
+    }
+    .alert {
+        text-align:center;
+    }
+    div.page-header.container h2 {margin:1%;}
+    div.page-header.container h3 {margin:1%;}
+    </style>
+
+    <body>
+<div style="text-align:center" class="page-header container">
+    <img class="img-responsive center-block" src="{% static "images/usb.png" %}" width="5%" height="auto">
+    <h2>SIGPAE-Históricos</h2>
+    <h3><small>Sistema de Gestión de Programas Analíticos de Estudio</small></h3>
+</div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-5 col-sm-5 col-md-offset-2">
+      <object data='{{url}}' 
+          type='application/pdf' 
+          width='100%' 
+          height='700px'/></object>
+    </div>
+
+    <div class="col-md-4">
+      <div class="panel panel-default">
+        <div class="panel-heading" style="text-align:center">
+          <h2 class="panel-title">Añadir Datos Extra</h2>
+        </div>
+        <div class="panel-body">
+                <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {% if form.non_field_errors %}
+                  {% for error in form.non_field_errors %}
+                    <div class="alert alert-danger">{{error}}</div>
+                  {% endfor %}
+                {% endif %}
+                  {% for field in form %}
+                  <div class="form-group" id="{{field.auto_id}}">
+                    {% if field.errors %}
+                      {% for error in field.errors %}
+                        <div class="alert alert-danger" role="alert">{{ error }}</div>
+                      {% endfor %}
+                    {% endif %}
+                    {{ field.label_tag }} {{ field }}
+                  </div>
+                  {% endfor %}
+                    <button class="btn btn-primary btn-lg btn-block" type="submit">Guardar</button>
+                </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    </body>
+    <footer>
+        <div class="center-block" style="text-align:center">
+            <small><p class="text-muted">Desarrollado por el equipo Lambda λ</p></small>
+        </div>
+        <script src="{% static "script.js" %}"></script>
+        <<script>
+  $('label[for=id_referencia]').hide()
+  $('select').hide();
+  $('select').prop('selectedIndex',1);
+</script>
+    </footer>
+</html>
+
