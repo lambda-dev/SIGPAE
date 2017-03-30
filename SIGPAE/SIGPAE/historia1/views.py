@@ -169,10 +169,13 @@ def editar_t(request, pk):
         for l in form_:
             nombre = l.cleaned_data.get('nombre')
             value = l.cleaned_data.get('value')
-            c = CamposExtra(nombre=nombre,value=value)
-            c.save()
-            c.document.add(doc)
-            c.save()
+            try:
+                c = CamposExtra(nombre=nombre,value=value)
+                c.save()
+                c.document.add(doc)
+                c.save()
+            except:
+                pass
 
         temp.codigo = form.cleaned_data['codigo'].upper()
         temp.pdf_to_text = strng

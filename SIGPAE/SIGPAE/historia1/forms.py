@@ -23,10 +23,10 @@ class SaveForm(forms.ModelForm):
     class Meta:
         model = Document
         fields = ['asignatura','codigo','creditos','year', 'trimestre','fecha','departamento','requisitos','justificacion','objetivos','contenidos','metodologias','evaluacion','bibliografias','horas_teoria','horas_lab','horas_practica','guardar']
-        
+
         def __init__(self, *args, **kwargs):
             super(SaveForm, self).__init__(*args, **kwargs)
-        
+
 
     def clean(self):
         cleaned_data = super(SaveForm, self).clean()
@@ -68,7 +68,7 @@ class SaveForm(forms.ModelForm):
         if creds is not None:
             if (creds < 0) or (creds > 16):
                 raise forms.ValidationError("Error: Valor de créditos fuera de rango")
-        
+
         if (year is not None) and (year > 2017 or year < 1969):
             raise forms.ValidationError("Error: Valor del año inválido")
 
@@ -197,8 +197,8 @@ class ExtraFields(forms.ModelForm):
 
         def __init__(self, *args, **kwargs):
             super(ExtraFields, self).__init__(*args, **kwargs)
-            self.fields['nombre'].required = True
-            self.fields['value'].required = True
+            self.fields['nombre'].required = False
+            self.fields['value'].required = False
             self.fields['nombre'].label = "Nombre:"
             self.fields['value'].label = "Texto:"
 
@@ -210,7 +210,10 @@ class BaseLinkFormSet(BaseFormSet):
             return
         titles = []
         for form in self.forms:
-            title = form.cleaned_data['nombre']
-            if title in titles:
-                raise forms.ValidationError("Los campos deben tener nombres distintos")
-            titles.append(title)
+            try:
+                title = form.cleaned_data['nombre']
+                if title in titles:
+                    raise forms.ValidationError("Los campos deben tener nombres distintos")
+                titles.append(title)
+            except:
+                pass
