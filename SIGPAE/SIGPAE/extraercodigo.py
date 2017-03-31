@@ -85,7 +85,7 @@ departamentos={	'CO':'Computo Cientifico y Estadistico',
 				}
 
 def extraerCodigo(texto):
-	codigo = re.search('[A-Z][A-Z]+(\-| |­)*[0-9][0-9][0-9]+',texto)
+	codigo = re.search('[A-Z]{2}(\-| |­)?[0-9]{4}|[A-Z]{3}(\-| |­)?[0-9]{3}',texto)
 	if (codigo!=None):
 		return codigo.group(0)
 	else:
@@ -103,12 +103,3 @@ def extraerDepartamento(texto):
 	    	return "NULL"
     else:
         return "NULL"
-# PRUEBAS
-#print(extraerCodigo('CI 3715'))
-#print(extraerDepartamento('CI 3715'))
-#print(extraerCodigo('CI-3715'))
-#print(extraerDepartamento('CI-3715'))
-#print(extraerCodigo('BO1125'))
-#print(extraerDepartamento('BO1125'))
-#print(extraerCodigo('ZZ125'))
-#print(extraerDepartamento('ZZ125'))

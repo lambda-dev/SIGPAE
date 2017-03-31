@@ -5,6 +5,8 @@ from django.forms.formsets import BaseFormSet
 from django.forms import inlineformset_factory
 from django.forms.formsets import formset_factory
 
+# FORMULARIO: Reportes Globales
+# Form para hacer la busqueda de los reportes globales
 class ReportForm(forms.Form):
     CFM = 'Ciencias Físicas y Matemáticas'
     CSH = 'Ciencias Sociales y Humanidades'
@@ -151,11 +153,15 @@ class ReportForm(forms.Form):
         choices = TIPOS
     )
 
+# FORMULARIO: Por Aprobar
+# Form para pedir los datos requeridos del usuario al guardar como Por Aprobar
 class PASAForm(forms.ModelForm):
     class Meta:
         model = Document
         fields = ['nombre', 'email', 'telefono']
 
+# FORMULARIO: Subir PDF
+# Form que permite subir los documentos PDF al sistema
 class DocumentForm(forms.ModelForm):
     class Meta:
         model = Document
@@ -167,10 +173,12 @@ class DocumentForm(forms.ModelForm):
             self.fields['document'].label = "Documento A Subir:"
             self.fields['scanned'].label = "Utilizar Reconocimiento de Caracteres:"
 
+# FORMULARIO: Guardar/Editar
+# Form que muestra los datos de las Transcripciones y permite su edición y futuro guardado
 class SaveForm(forms.ModelForm):
     class Meta:
         model = Document
-        fields = ['asignatura','codigo','creditos','fecha_vigano', 'fecha_vigtrim','fecha','departamento','requisitos','justificacion','objetivos','contenidos','metodologias','evaluacion','bibliografias','horas_teoria','horas_lab','horas_practica','guardar']
+        fields = ['asignatura','codigo','creditos','fecha_vigano', 'fecha_vigtrim','departamento','requisitos','justificacion','objetivos','contenidos','metodologias','evaluacion','horas_teoria','horas_lab','horas_practica','guardar']
         
         def __init__(self, *args, **kwargs):
             super(SaveForm, self).__init__(*args, **kwargs)
@@ -186,9 +194,7 @@ class SaveForm(forms.ModelForm):
         trim = cleaned_data.get("fecha_vigtrim")
         pasa = cleaned_data.get("guardar")
         asig = cleaned_data.get("asignatura")
-        fuentes = cleaned_data.get("bibliografias")
         sinop = cleaned_data.get("contenidos")
-        print(cleaned_data)
 
         if h_lab is not None and h_teo is not None and h_prac is not None:
             if h_lab + h_teo + h_prac > 40:
@@ -245,9 +251,9 @@ class SaveForm(forms.ModelForm):
                 raise forms.ValidationError("Error: Para guardar como P.A.S.A. debe tener horas de práctica")
             if sinop == '':
                 raise forms.ValidationError("Error: Para guardar como P.A.S.A. debe tener contenidos sinópticos")
-            if fuentes == '':
-                raise forms.ValidationError("Error: Para guardar como P.A.S.A. debe tener fuentes")
 
+# FORMULARIO: Buscar Transcripciones
+# Form para hacer las consultas de las transcripciones guardadas en el sistema
 class SearchForm(forms.ModelForm):
     class Meta:
         model = Document
@@ -268,6 +274,8 @@ class SearchForm(forms.ModelForm):
         if (year is None and trim != 'NN') or (year is not None and trim == 'NN'):
            raise forms.ValidationError("Trimeste y año deben tener valores o ser ambos vacios.")
 
+# FORMULARIO: Buscar Programas
+# Form para hacer las consultas de Programas guardados en SIGPAE
 class SearchFormProg(forms.ModelForm):
     class Meta:
         model = Programa
@@ -288,6 +296,8 @@ class SearchFormProg(forms.ModelForm):
         if (year is None and trim != 'NN') or (year is not None and trim == 'NN'):
             raise forms.ValidationError("Trimeste y año deben tener valores o ser ambos vacios.")
 
+# FORMULARIO: Mostrar Programa
+# Form para mostrar el contenido de los Programas, con los campos bloqueados
 class ViewProgForm(forms.ModelForm):
     class Meta:
         model = Programa
@@ -310,25 +320,24 @@ class ViewProgForm(forms.ModelForm):
         self.fields['fuentes'].disabled = True
         self.fields['cronograma'].disabled = True
 
+# FORMULARIO: Fuentes de Informacion
+# Form para añadir nuevas fuentes de informacion
 class RefForm(forms.ModelForm):
     class Meta:
         model = Referencia
-        fields = ['titulo','editorial','edicion']
+        fields = ['titulo', 'document']
 
         def __init__(self, *args, **kwargs):
             super(RefForm, self).__init__(*args, **kwargs)
             self.fields['titulo'].required = True
-            self.fields['editorial'].required = True
-            self.fields['edicion'].required = True
-            self.fields['titulo'].label = "Titulo del libro"
-            self.fields['editorial'].label = "Editorial del libro"
-            self.fields['edicion'].label = "Edicion y/o año de vigencia"
+            self.fields['titulo'].label = "Título"
 
-
+# FORMULARIO: Autores
+# Form para añadir nuevos autores a una fuente
 class AutForm(forms.ModelForm):
     class Meta:
         model = Autores
-        fields = ['name','apellido']
+        fields = ['name','apellido','referencia']
 
         def __init__(self, *args, **kwargs):
             super(AutForm, self).__init__(*args, **kwargs)
@@ -343,10 +352,12 @@ class BaseLinkFormSetR(BaseFormSet):
         form.fields['Nombre Autor']= forms.CharField()
         form.fields['Apellido Autor']= forms.CharField()
 
+# FORMULARIO: Mostrar Por Aprobar
+# Form para mostrar el contenido de los documentos Por Aprobar, con los campos bloqueados
 class ViewPASAForm(forms.ModelForm):
     class Meta:
         model = Document
-        fields = ['nombre', 'email','telefono', 'asignatura','codigo','creditos','fecha_vigano', 'fecha_vigtrim','departamento','requisitos','objetivos','contenidos','metodologias','evaluacion','bibliografias','horas_teoria','horas_lab','horas_practica']
+        fields = ['nombre', 'email','telefono', 'asignatura','codigo','creditos','fecha_vigano', 'fecha_vigtrim','departamento','requisitos','objetivos','contenidos','metodologias','evaluacion','horas_teoria','horas_lab','horas_practica']
 
     def __init__(self, *args, **kwargs):
         super(ViewPASAForm, self).__init__(*args, **kwargs)
@@ -363,11 +374,19 @@ class ViewPASAForm(forms.ModelForm):
         self.fields['objetivos'].disabled = True
         self.fields['metodologias'].disabled = True
         self.fields['evaluacion'].disabled = True
-        self.fields['bibliografias'].disabled = True
         self.fields['horas_teoria'].disabled = True
         self.fields['horas_lab'].disabled = True
         self.fields['horas_practica'].disabled = True
 
+# FORMULARIO: Datos extra de Referencias
+# Form para añadir datos extra a las referencias: editoria, etc
+class FormDatosRef(forms.ModelForm):
+    class Meta:
+        model = DatosReferencia
+        fields = ['editorial','edicion','year_r','nota', 'referencia']
+
+# FORMULARIO: Campos Extra
+# Form para añadir campos extra a una transcripcion
 class ExtraFields(forms.ModelForm):
     class Meta:
         model = CamposExtra
@@ -375,8 +394,8 @@ class ExtraFields(forms.ModelForm):
 
         def __init__(self, *args, **kwargs):
             super(ExtraFields, self).__init__(*args, **kwargs)
-            self.fields['nombre'].required = True
-            self.fields['value'].required = True
+            self.fields['nombre'].required = False
+            self.fields['value'].required = False
             self.fields['nombre'].label = "Nombre:"
             self.fields['value'].label = "Texto:"
 
@@ -388,9 +407,11 @@ class BaseLinkFormSet(BaseFormSet):
             return
         titles = []
         for form in self.forms:
-            if 'nombre' in form.cleaned_data:
+            try:
                 title = form.cleaned_data['nombre']
                 if title in titles:
                     raise forms.ValidationError("Los campos deben tener nombres distintos")
                 titles.append(title)
+            except:
+                pass
 

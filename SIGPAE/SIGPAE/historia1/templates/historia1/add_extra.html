@@ -1,0 +1,91 @@
+{% extends 'historia1/base.html' %}
+{% load static %}
+{% block content %}
+<div style="text-align:center" class="page-header container">
+    <img class="img-responsive center-block" src="{% static "images/usb.png" %}" width="5%" height="auto">
+    <h2>SIGPAE-Históricos</h2>
+    <h3><small>Sistema de Gestión de Programas Analíticos de Estudio</small></h3>
+</div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-4 col-md-offset-2">
+      <div class="panel panel-default">
+        <div class="panel-heading" style="text-align:center">
+          <h2 class="panel-title">Añadir</h2>
+        </div>
+      <div class="panel-body">
+        <a href="/referencias/autor/{{pkD}}/{{pkR}}" role="button" class="btn btn-primary" type="button">Autores</a>
+        <a href="/referencias/campos_extra/{{pkD}}/{{pkR}}" role="button" class="btn btn-primary" type="button">Editorial/Edición/Año/Notas</a>
+        <a style="margin-top: 10px;" href="/editar/referencias/{{pkD}}" role="button" class="btn btn-primary">Regresar</a>
+      </div>
+    </div>
+  </div>
+
+    <div class="col-md-4">
+      <div class="panel panel-default">
+              <div class="panel-heading" style="text-align:center">
+                <h2 class="panel-title">Autores</h2>
+              </div>
+            <div class="panel-body">
+              {% if query %}
+              <table class="table table-striped table-hover">
+              <thead>
+                <tr><th style="text-align: center;">Nombre</th>
+                <th style="text-align: center;">Apellido</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for item in query%}
+                <tr>
+                <td>{{item.name}}</td>
+                <td>{{item.apellido}}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+                </table>
+                {% elif request.method == 'POST' and not query %}
+                <div class="alert alert-danger">No se encontraron resultados. Intente de nuevo</div>
+              {% endif %}
+            </div>
+          </div>
+    </div>
+
+  </div>
+  <div class="row">
+    <div class="col-md-9 col-md-offset-2">
+      <div class="panel panel-default">
+          <div class="panel-heading" style="text-align:center">
+            <h2 class="panel-title">Datos Extra</h2>
+          </div>
+          <div class="panel-body">
+            {% if query2 %}
+              <table class="table table-striped table-hover">
+              <thead>
+                <tr><th style="text-align: center;">Editorial</th>
+                <th style="text-align: center;">Edición</th>
+                <th style="text-align: center;">Año</th>
+                <th style="text-align: center;">Notas</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for item in query2 %}
+                <tr>
+                <td>{{item.editorial}}</td>
+                <td>{{item.edicion}}</td>
+                <td>{{item.year_r}}</td>
+                <td>{{item.nota}}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+                </table>
+                {% elif request.method == 'POST' and not query %}
+                <div class="alert alert-danger">No se encontraron resultados. Intente de nuevo</div>
+              {% endif %}
+          </div>
+      </div>
+    </div>
+  </div>
+</div>
+<
+{% endblock %}

@@ -16,9 +16,12 @@ import os
 # Create your views here.
 from django.http import HttpResponse, HttpResponseRedirect
 
+# Index del sistema
 def index(request):
     return render(request, 'historia1/index.html')
 
+# VIEW: Reportes globales
+# Hace queries a la base de datos segun el tipo para mostrar el reporte
 def r_global(request):
     if request.method == 'POST':
         form = ReportForm(request.POST)
@@ -40,6 +43,8 @@ def r_global(request):
         form = ReportForm()
     return render(request, 'historia1/global.html', {'form': form})    
 
+# VIEW: Buscar Por Aprobar
+# Busca en la base de datos los documentos guardados Por Aprobar y los muestra
 def buscar_s(request):
     if request.method == 'POST':
         form = SearchForm(request.POST)
@@ -57,6 +62,8 @@ def buscar_s(request):
         form = SearchForm()
         return render(request, 'historia1/buscar_s.html', {'form': form})
 
+# VIEW: Ver Por Aprobar
+# Muestra los campos del documento Por Aprobar, no deja editarlos
 def view_s(request, pk):
     doc = get_object_or_404(Document, pk=pk)
     if doc.guardar == 'TRAN':
@@ -65,6 +72,8 @@ def view_s(request, pk):
     form = ViewPASAForm(request.POST or None, instance=doc)
     return render(request, 'historia1/view_s.html', {'form':form})
 
+# VIEW: Buscar Transcripciones
+# Busca en la base de datos los documentos guardados de tipo Transcripcion y los muestra
 def buscar_t(request):
     if request.method == 'POST':
         form = SearchForm(request.POST)
@@ -82,6 +91,8 @@ def buscar_t(request):
         form = SearchForm()
         return render(request, 'historia1/buscar_t.html', {'form': form})
 
+# VIEW: Buscar Programas
+# Busca en la base de datos los documentos guardados de tipo Programa y los muestra
 def buscar_p(request):
     if request.method == 'POST':
         form = SearchFormProg(request.POST)
@@ -99,6 +110,8 @@ def buscar_p(request):
         form = SearchFormProg()
         return render(request, 'historia1/buscar_p.html', {'form': form})
 
+# VIEW: Subir PDF
+# Formulario para subir los archivos PDF al sistema
 def model_form_upload(request):
     error = ""
     scan=False
@@ -138,11 +151,15 @@ def model_form_upload(request):
     'form' : form, 'error': error
     })
 
+# VIEW: Mostrar Programa
+# Muestra un documento de tipo Programa, con sus campos no editables
 def view_p(request, pk):
     prog = get_object_or_404(Programa, pk=pk)
     form = ViewProgForm(request.POST or None, instance=prog)
     return render(request, 'historia1/view_p.html', {'form':form})
 
+# VIEW: Editar
+# Muestra el formulario responsable de editar las transcripciones, junto al manejo de campos extra
 def editar_t(request, pk):
     ## TODO
     # GUARDAR STRNG SI LO MODIFICO !!
@@ -155,27 +172,15 @@ def editar_t(request, pk):
 
     campos = ['asignatura','codigo','creditos','fecha_vigano', 'fecha_vigtrim','fecha',
             'departamento','requisitos','justificacion','objetivos','contenidos',
-            'metodologias','evaluacion','bibliografias','horas_teoria','horas_lab',
+            'metodologias','evaluacion','horas_teoria','horas_lab',
             'horas_practica','guardar']
 
     if doc.guardar == 'PASA':
         return redirect('index')
 
-    FormSet1 = formset_factory(AutForm)
-    form_1=RefForm(request.POST or None)
-    #LibroFormset = inlineformset_factory(Referencia,Autores,fields=['name','apellido',])
-    form_2=FormSet1(request.POST or None)
-    form_3=RefForm(request.POST or None)
-    form_4=FormSet1(request.POST or None)
-    form_5=RefForm(request.POST or None)
-    form_6=FormSet1(request.POST or None)
-    form_7=RefForm(request.POST or None)
-    form_8=FormSet1(request.POST or None)
-    form_9=RefForm(request.POST or None)
-    form_10=FormSet1(request.POST or None)
 
     FormSet = formset_factory(ExtraFields, formset=BaseLinkFormSet)
-    requeridos = ['requisitos','objetivos','metodologias','evaluacion','justificacion']
+    requeridos = ['justificacion']
 
     y = {}
     for x in campos:
@@ -193,20 +198,8 @@ def editar_t(request, pk):
         form_ = FormSet(initial = initial_data)
 
     form = SaveForm(request.POST or None, instance=doc)
-    if form.is_valid() and form_.is_valid() and form_1.is_valid() and form_2.is_valid():
+    if form.is_valid() and form_.is_valid():
         temp = form.save(commit=False)
-        if form.cleaned_data['fecha'] is not None:
-            month = 1
-            if form.cleaned_data['fecha_vigtrim'] == 'EM':
-                month = 1
-            elif form.cleaned_data['fecha_vigtrim'] == 'AB':
-                month = 4
-            elif form.cleaned_data['fecha_vigtrim'] == 'SD':
-                month = 9
-
-            if form.cleaned_data['fecha_vigano'] is not None: 
-                fecha = date(form.cleaned_data['fecha_vigano'], month, 1)
-                temp.fecha = fecha
 
         for d in data:
             d.delete()
@@ -214,15 +207,17 @@ def editar_t(request, pk):
         for l in form_:
             nombre = l.cleaned_data.get('nombre')
             value = l.cleaned_data.get('value')
-            c = CamposExtra(nombre=nombre,value=value)
-            c.save()
-            c.document.add(doc)
-            c.save()
+            try:
+                c = CamposExtra(nombre=nombre,value=value)
+                c.save()
+                c.document.add(doc)
+                c.save()
+            except:
+                pass
 
         temp.codigo = form.cleaned_data['codigo'].upper()
         temp.pdf_to_text = strng
         temp.save()
-
         # PARA PASA => VERIFICAR QUE CAMPOS OBLI NO VACIOS, OTRAS RESTRICCIONES
         if form.cleaned_data['guardar'] == 'PASA':
             return redirect('form_pasa', pk)
@@ -230,16 +225,105 @@ def editar_t(request, pk):
             return redirect('/editar/'+pk+'')
 
     return render(request, 'historia1/editar.html', {'departamento': departamento, 'codigo': codigo,'strng': strng, 'url': url, 'form_s': form, 
-                                                    'requeridos':requeridos,'form_':form_,'act':y,'form_1': form_1,'form_2': form_2,'form_3': form_3,'form_4': form_4,'form_5': form_5,'form_6': form_6,'form_7': form_7,'form_8': form_8,'form_9': form_9,'form_10': form_10})
+                                                    'requeridos':requeridos,'form_':form_,'act':y, 'pk': pk})
 
+# VIEW: Formulario Por Aprobar
+# Le pide al usuario los datos a guardar cuando es un documento Por Aprobar
 def form_pasa(request, pk):
-    if request.method == 'POST':
-        doc = get_object_or_404(Document, pk=pk)
-        form = PASAForm(request.POST or None, instance=doc)
+    doc = get_object_or_404(Document, pk=pk)
+    form = PASAForm(request.POST or None, instance=doc)
         
-        if form.is_valid():
-            form.save()
-            return redirect('/?msg=pasa_saved')
+    if form.is_valid():
+        form.save()
+        return redirect('/?msg=pasa_saved')
             
-        return render(request, 'historia1/pasa.html', {'form':form, 'pk':pk})
-    return redirect('/?msg=error')
+    return render(request, 'historia1/pasa.html', {'form':form, 'pk':pk})
+
+# VIEW: Referencias
+# Muestra la pantalla donde se maneja el agregar las fuentes de información
+def referencias(request, pk):
+    doc = get_object_or_404(Document, pk=pk)
+    if request.method == 'POST':
+
+        ### GUARDAR ####
+        url = doc.document.url
+        strng = doc.pdf_to_text
+        FormSet = formset_factory(ExtraFields, formset=BaseLinkFormSet)
+        form_ = FormSet(request.POST)
+
+        form = SaveForm(request.POST or None, instance=doc)
+        if form.is_valid() and form_.is_valid():
+            temp = form.save(commit=False)
+                
+            for l in form_:
+                nombre = l.cleaned_data.get('nombre')
+                value = l.cleaned_data.get('value')
+                c = CamposExtra(nombre=nombre,value=value)
+                c.save()
+                c.document.add(doc)
+                c.save()
+
+            temp.codigo = form.cleaned_data['codigo'].upper()
+            temp.pdf_to_text = strng
+            temp.save()
+        ######## GUARDAR #####################
+
+            query = Referencia.objects.filter(document=doc)
+        return render(request, 'historia1/referencias.html', {'query':query, 'pkD':pk})
+    else:
+        query = Referencia.objects.filter(document=doc)
+        return render(request, 'historia1/referencias.html', {'query':query, 'pkD':pk})
+
+# VIEW: Añadir libro nuevo
+# Añade un libro nuevo a las fuentes de información
+def add_ref(request, pk):
+    doc = get_object_or_404(Document, pk=pk)
+    if request.method == 'POST':
+        form = RefForm(request.POST)
+        if form.is_valid():
+            query1 = Document.objects.filter(pk=pk)
+            form.cleaned_data['document'] = query1
+            form.save()
+            return redirect('/editar/referencias/'+pk+'')
+    else:
+        form = RefForm()
+    return render(request, 'historia1/add_ref.html', {'pk':pk, 'form':form, 'url': doc.document.url})
+
+# VIEW: Ver datos extra de la Fuente
+# Permite ver todos los autores y todos los datos extra de la fuente y permite elegir cual añadir
+def add_extra(request, pkD, pkR):
+    query = Autores.objects.filter(referencia=pkR)
+    query2 = DatosReferencia.objects.filter(referencia=pkR)
+    return render(request, 'historia1/add_extra.html', {'pkD':pkD, 'pkR':pkR, 'query':query,'query2':query2})
+
+# VIEW: Añadir Autor
+# Permite añadir autores nuevos a la fuente de información
+def add_autores(request, pkD, pkR):
+    doc = get_object_or_404(Document, pk=pkD)
+    form = AutForm()
+    if request.method == 'POST':
+        form = AutForm(request.POST)
+        if form.is_valid():
+            temp = form.save(commit=False)
+            ref = get_object_or_404(Referencia, pk=pkR)
+            temp.referencia = ref
+            temp.save()
+
+        return redirect('/add/referencias/extra/'+pkD+'/'+pkR)
+    return render(request, 'historia1/add_autor.html', {'form':form, 'url': doc.document.url})
+
+# VIEW: Añadir datos de la Fuente
+# Añade datos extra a la fuente de información, como editorial, año, etc
+def add_extras(request, pkD, pkR):
+    doc = get_object_or_404(Document, pk=pkD)
+    form = FormDatosRef()
+    if request.method == 'POST':
+        form = FormDatosRef(request.POST)
+        if form.is_valid():
+            temp = form.save(commit=False)
+            ref = get_object_or_404(Referencia, pk=pkR)
+            temp.referencia = ref
+            temp.save()
+
+        return redirect('/add/referencias/extra/'+pkD+'/'+pkR)
+    return render(request, 'historia1/add_notas.html', {'form':form, 'url': doc.document.url})
