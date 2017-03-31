@@ -103,12 +103,3 @@ def extraerDepartamento(texto):
 	    	return "NULL"
     else:
         return "NULL"
-# PRUEBAS
-#print(extraerCodigo('CI 3715'))
-#print(extraerDepartamento('CI 3715'))
-#print(extraerCodigo('CI-3715'))
-#print(extraerDepartamento('CI-3715'))
-#print(extraerCodigo('BO1125'))
-#print(extraerDepartamento('BO1125'))
-#print(extraerCodigo('ZZ125'))
-#print(extraerDepartamento('ZZ125'))
